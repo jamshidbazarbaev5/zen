@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import combo1 from './assets/combo1.jpg'
+// import combo1 from './assets/combo1.jpg'
 import { Check } from 'lucide-react';
 import coffee  from './assets/coffee.webp'
 
@@ -7,7 +7,7 @@ import coffee  from './assets/coffee.webp'
 const SearchIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="11" cy="11" r="8" />
-    <path d="m21 21-4.35-4.35" />
+    <path d="m21 2MoreVertIcon1-4.35-4.35" />
   </svg>
 );
 
@@ -122,13 +122,13 @@ const MenuIcon = () => (
   </svg>
 );
 
-const MoreVertIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="1" />
-    <circle cx="12" cy="5" r="1" />
-    <circle cx="12" cy="19" r="1" />
-  </svg>
-);
+// const MoreVertIcon = () => (
+//   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+//     <circle cx="12" cy="12" r="1" />
+//     <circle cx="12" cy="5" r="1" />
+//     <circle cx="12" cy="19" r="1" />
+//   </svg>
+// );
 
 const ChevronDownIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -143,12 +143,12 @@ const UserIcon = () => (
   </svg>
 );
 
-const BurgerIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M2 11h20M2 11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2M2 11v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6" />
-    <path d="M6 9V6a6 6 0 0 1 12 0v3" />
-  </svg>
-);
+// const BurgerIcon = () => (
+//   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+//     <path d="M2 11h20M2 11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2M2 11v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6" />
+//     <path d="M6 9V6a6 6 0 0 1 12 0v3" />
+//   </svg>
+// );
 
 const ArrowLeftIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
