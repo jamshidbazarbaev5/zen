@@ -19,6 +19,24 @@ body.modal-open {
   background: #f5f5f5;
 }
 
+/* Remove focus outline on all buttons and inputs */
+button:focus,
+button:active,
+input:focus,
+input:active {
+  outline: none !important;
+  border: none;
+}
+
+/* Remove tap highlight on mobile */
+button,
+input {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -57,4 +75,24 @@ body.modal-open {
   to {
     transform: translateX(0);
   }
+}
+
+/* Category button hover effect */
+.category-btn:hover {
+  background: #e74c3c !important;
+  color: #fff !important;
+}
+
+.category-btn-active:hover {
+  background: #d43f2f !important;
+}
+
+/* Scroll to top button hover effect */
+.scroll-top-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.5);
+}
+
+.scroll-top-btn:active {
+  transform: scale(0.95);
 }

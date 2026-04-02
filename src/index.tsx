@@ -157,6 +157,27 @@ const ArrowLeftIcon = () => (
   </svg>
 );
 
+const MinusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const ShoppingBagIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <path d="M16 10a4 4 0 0 1-8 0" />
+  </svg>
+);
+
+const ArrowUpIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="19" x2="12" y2="5" />
+    <polyline points="5 12 12 5 19 12" />
+  </svg>
+);
+
 interface Product {
   id: number;
   name: string;
@@ -168,6 +189,11 @@ interface Product {
 
 const MOCK_PRODUCTS: Product[] = [
   { id: 1, name: "KIDS COMBO", price: 73000, category: "Kombo", image: coffee, description: "Mini burger Pops Kids sok Super qahramon Sousni mijozning ko'ngliga qarab tanlash imkoniyat bor" },
+    { id: 13, name: "KIDS COMBO", price: 73000, category: "Kombo", image: coffee, description: "Mini burger Pops Kids sok Super qahramon Sousni mijozning ko'ngliga qarab tanlash imkoniyat bor" },
+    { id: 14, name: "KIDS COMBO", price: 73000, category: "Kombo", image: coffee, description: "Mini burger Pops Kids sok Super qahramon Sousni mijozning ko'ngliga qarab tanlash imkoniyat bor" },
+    { id: 15, name: "KIDS COMBO", price: 73000, category: "Kombo", image: coffee, description: "Mini burger Pops Kids sok Super qahramon Sousni mijozning ko'ngliga qarab tanlash imkoniyat bor" },
+    { id: 16, name: "KIDS COMBO", price: 73000, category: "Kombo", image: coffee, description: "Mini burger Pops Kids sok Super qahramon Sousni mijozning ko'ngliga qarab tanlash imkoniyat bor" },
+
   { id: 2, name: "KAMTAR COMBO", price: 35000, category: "Kombo", image: coffee, description: "Hot-dog kartoshka fri va ichimlik bilan" },
   { id: 3, name: "OILAVIY COMBO", price: 120000, category: "Kombo", image: coffee, description: "2 ta burger, 2 kartoshka fri, 2 ichimlik" },
   { id: 4, name: "MEGA COMBO", price: 95000, category: "Kombo", image: coffee, description: "Katta burger, kartoshka fri, ichimlik va desert" },
@@ -222,6 +248,7 @@ const Index = () => {
   const [orderTypeModalOpen, setOrderTypeModalOpen] = useState(false);
   const [branchModalOpen, setBranchModalOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(BRANCHES[0]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Disable body scroll when modal is open
   useEffect(() => {
@@ -234,6 +261,19 @@ const Index = () => {
       document.body.classList.remove('modal-open');
     };
   }, [selectedProduct, menuOpen, languageModalOpen, orderTypeModalOpen, branchModalOpen]);
+
+  // Handle scroll for scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const filteredProducts = MOCK_PRODUCTS.filter(
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -312,6 +352,7 @@ const Index = () => {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 style={activeCategory === cat ? styles.catActive : styles.catBtn}
+                className={activeCategory === cat ? "category-btn-active" : "category-btn"}
               >
                 {cat}
               </button>
@@ -375,7 +416,7 @@ const Index = () => {
               </div>
               <div style={styles.cartItemControls}>
                 <button style={styles.cartControlBtn} onClick={() => removeFromCart(product.id)}>
-                  <TrashIcon />
+                  <MinusIcon />
                 </button>
                 <span style={{ fontSize: 16, fontWeight: 600, minWidth: 24, textAlign: "center" }}>{qty}</span>
                 <button style={styles.cartControlBtnPlus} onClick={() => addToCart(product.id)}>+</button>
@@ -399,7 +440,10 @@ const Index = () => {
           </div>
           {screen === "home" ? (
             <button style={styles.cartButton} onClick={() => setScreen("cart")}>
-              <span>Savat</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ShoppingBagIcon />
+                <span>Savat</span>
+              </div>
               <span>{formatPrice(totalPrice)}</span>
             </button>
           ) : (
@@ -602,6 +646,13 @@ const Index = () => {
           </div>
         </div>
       )}
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button style={styles.scrollTopBtn} onClick={scrollToTop} className="scroll-top-btn">
+          <ArrowUpIcon />
+        </button>
+      )}
     </div>
   );
 };
@@ -622,8 +673,8 @@ const styles: Record<string, React.CSSProperties> = {
   searchBox: { margin: "0 16px 12px", background: "#f2f2f2", borderRadius: 12, display: "flex", alignItems: "center", padding: "12px 16px", gap: 10, color: "#999" },
   searchInput: { border: "none", background: "none", outline: "none", fontSize: 16, flex: 1, color: "#333" },
   categories: { display: "flex", gap: 8, padding: "0 16px 16px", overflowX: "auto" },
-  catBtn: { background: "none", border: "none", fontSize: 15, color: "#666", cursor: "pointer", padding: "8px 16px", borderRadius: 20, whiteSpace: "nowrap", transition: "all 0.2s ease" },
-  catActive: { background: "#e74c3c", color: "#fff", border: "none", fontSize: 15, cursor: "pointer", padding: "8px 20px", borderRadius: 20, fontWeight: 600, whiteSpace: "nowrap", transition: "all 0.2s ease" },
+  catBtn: { background: "none", border: "none", fontSize: 15, color: "#666", cursor: "pointer", padding: "8px 20px", borderRadius: 20, whiteSpace: "nowrap", transition: "all 0.2s ease", minWidth: 90, fontWeight: 400 },
+  catActive: { background: "#e74c3c", color: "#fff", border: "none", fontSize: 15, cursor: "pointer", padding: "8px 20px", borderRadius: 20, fontWeight: 600, whiteSpace: "nowrap", transition: "all 0.2s ease", minWidth: 90 },
   sectionTitle: { fontSize: 28, fontWeight: 700, padding: "0 16px 16px", margin: 0, color: "#222" },
   grid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, padding: "0 16px" },
   card: { cursor: "pointer" },
@@ -691,6 +742,7 @@ const styles: Record<string, React.CSSProperties> = {
   branchItem: { width: "100%", display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: "none", border: "none", borderBottom: "1px solid #f5f5f5", cursor: "pointer", transition: "background 0.2s ease", color: "#222" },
   branchItemActive: { width: "100%", display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: "#fff5f5", border: "none", borderBottom: "1px solid #f5f5f5", cursor: "pointer", transition: "background 0.2s ease", color: "#222" },
   branchIcon: { width: 44, height: 44, borderRadius: 12, background: "#f8f8f8", display: "flex", alignItems: "center", justifyContent: "center", color: "#e74c3c" },
+  scrollTopBtn: { position: "fixed", bottom: 160, right: 20, width: 56, height: 56, borderRadius: "50%", background: "#e74c3c", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(231,76,60,0.4)", zIndex: 99, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s ease", animation: "scaleIn 0.3s ease" },
 };
 
 export default Index;
