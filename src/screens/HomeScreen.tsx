@@ -1,0 +1,79 @@
+import { styles } from '../styles';
+import { SearchIcon } from '../components/Icons';
+import { CATEGORIES } from '../data/products';
+import type { Product } from '../types';
+import { formatPrice } from '../utils/formatPrice';
+
+interface Props {
+  activeCategory: string;
+  setActiveCategory: (cat: string) => void;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  filteredProducts: Product[];
+  cart: Record<number, number>;
+  addToCart: (id: number) => void;
+  removeFromCart: (id: number) => void;
+  onProductSelect: (product: Product) => void;
+}
+
+const HomeScreen = ({
+  activeCategory,
+  setActiveCategory,
+  searchQuery,
+  setSearchQuery,
+  filteredProducts,
+  cart,
+  addToCart,
+  removeFromCart,
+  onProductSelect,
+}: Props) => (
+  <>
+    <div style={styles.searchBox}>
+      <SearchIcon />
+      <input
+        style={styles.searchInput}
+        placeholder="Qidirish"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+    </div>
+
+    <div style={styles.categories}>
+      {CATEGORIES.map((cat) => (
+        <button
+          key={cat}
+          onClick={() => setActiveCategory(cat)}
+          style={activeCategory === cat ? styles.catActive : styles.catBtn}
+          className={activeCategory === cat ? "category-btn-active" : "category-btn"}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <h1 style={styles.sectionTitle}>{activeCategory}</h1>
+
+    <div style={styles.grid}>
+      {filteredProducts.map((product) => (
+        <div key={product.id} style={styles.card}>
+          <div style={styles.cardImageWrap} onClick={() => onProductSelect(product)}>
+            <img src={product.image} alt={product.name} style={styles.cardImage} loading="lazy" />
+            {cart[product.id] ? (
+              <div style={styles.cardCounter}>
+                <button style={styles.counterBtn} onClick={(e) => { e.stopPropagation(); removeFromCart(product.id); }}>−</button>
+                <span style={styles.counterNum}>{cart[product.id]}</span>
+                <button style={styles.counterBtn} onClick={(e) => { e.stopPropagation(); addToCart(product.id); }}>+</button>
+              </div>
+            ) : (
+              <button style={styles.addBtn} onClick={(e) => { e.stopPropagation(); addToCart(product.id); }}>+</button>
+            )}
+          </div>
+          <div style={styles.cardPrice}>{formatPrice(product.price)}</div>
+          <div style={styles.cardName}>{product.name}</div>
+        </div>
+      ))}
+    </div>
+  </>
+);
+
+export default HomeScreen;

@@ -96,3 +96,35 @@ input {
 .scroll-top-btn:active {
   transform: scale(0.95);
 }
+
+/* Selection item hover effects */
+button[style*="languageItem"]:hover,
+button[style*="branchItem"]:hover,
+button[style*="orderTypeItem"]:hover {
+  background: #fafafa !important;
+}
+
+button[style*="languageItemActive"]:hover,
+button[style*="branchItemActive"]:hover,
+button[style*="orderTypeItemActive"]:hover {
+  background: #fff5f5 !important;
+}
+
+/* Smooth check icon animation */
+@keyframes checkIn {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.check-icon {
+  animation: checkIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
