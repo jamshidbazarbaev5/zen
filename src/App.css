@@ -8,15 +8,11 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #f5f5f5;
 }
 
 body.modal-open {
   overflow: hidden;
-}
-
-.app {
-  min-height: 100vh;
-  background: #f5f5f5;
 }
 
 /* Remove focus outline on all buttons and inputs */
@@ -25,7 +21,6 @@ button:active,
 input:focus,
 input:active {
   outline: none !important;
-  border: none;
 }
 
 /* Remove tap highlight on mobile */
@@ -37,94 +32,423 @@ input {
   user-select: none;
 }
 
+/* ============ ANIMATIONS ============ */
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* Category button hover effect */
 .category-btn:hover {
-  background: #e74c3c !important;
+  background: #2d5a3d !important;
   color: #fff !important;
 }
 
 .category-btn-active:hover {
-  background: #d43f2f !important;
+  background: #234a31 !important;
 }
 
 /* Scroll to top button hover effect */
 .scroll-top-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.5);
+  box-shadow: 0 6px 16px rgba(45, 90, 61, 0.5);
 }
 
 .scroll-top-btn:active {
   transform: scale(0.95);
 }
 
-/* Selection item hover effects */
-button[style*="languageItem"]:hover,
-button[style*="branchItem"]:hover,
-button[style*="orderTypeItem"]:hover {
-  background: #fafafa !important;
-}
-
-button[style*="languageItemActive"]:hover,
-button[style*="branchItemActive"]:hover,
-button[style*="orderTypeItemActive"]:hover {
-  background: #fff5f5 !important;
-}
-
 /* Smooth check icon animation */
 @keyframes checkIn {
-  0% {
-    transform: scale(0) rotate(-45deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2) rotate(0deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 .check-icon {
   animation: checkIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+
+/* ============ MOBILE (default) ============ */
+@media (max-width: 767px) {
+  .desktop-sidebar {
+    display: none !important;
+  }
+
+  .desktop-layout {
+    display: block;
+  }
+}
+
+
+/* ============ DESKTOP (768px+) ============ */
+@media (min-width: 768px) {
+  body {
+    background: #fff;
+  }
+
+  .app-container {
+    max-width: 1400px !important;
+    padding-bottom: 0 !important;
+    background: #fff !important;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* ---- Header ---- */
+  .profile-row {
+    padding: 16px 40px !important;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  /* ---- Layout ---- */
+  .desktop-layout {
+    display: flex;
+    min-height: calc(100vh - 73px);
+  }
+
+  .desktop-main {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 40px;
+    padding-top: 8px;
+  }
+
+  /* ---- Search, Categories, Title ---- */
+  .search-box {
+    margin: 8px 40px 20px !important;
+    border-radius: 14px !important;
+    padding: 14px 20px !important;
+  }
+
+  .categories-row {
+    padding: 0 40px 20px !important;
+    gap: 10px !important;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    padding: 0 40px 24px !important;
+    font-size: 32px !important;
+  }
+
+  /* ---- Product Grid ---- */
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+    padding: 0 40px !important;
+  }
+
+  .card-image-wrap {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 16px;
+  }
+
+  .card-image-wrap:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ---- Desktop Sidebar Cart ---- */
+  .desktop-sidebar {
+    width: 400px;
+    flex-shrink: 0;
+    border-left: 1px solid #eee;
+    background: #fafafa;
+    position: sticky;
+    top: 73px;
+    height: calc(100vh - 73px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desktop-sidebar-header {
+    padding: 24px 24px 16px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  .desktop-sidebar-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+  }
+
+  .desktop-sidebar-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: #bbb;
+    font-size: 15px;
+    padding: 40px;
+    text-align: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .desktop-sidebar-empty svg {
+    width: 48px;
+    height: 48px;
+    stroke: #ddd;
+  }
+
+  .desktop-cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .desktop-cart-items::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .desktop-cart-items::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+  }
+
+  .desktop-cart-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .desktop-cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .desktop-cart-item:hover {
+    background: #fff;
+  }
+
+  .desktop-cart-item img {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .desktop-cart-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .desktop-cart-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .desktop-cart-item-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+    margin-top: 3px;
+  }
+
+  .desktop-cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .desktop-cart-item-controls button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #555;
+    transition: all 0.15s ease;
+  }
+
+  .desktop-cart-item-controls button:hover {
+    border-color: #2d5a3d;
+    color: #2d5a3d;
+    background: #f0f5f1;
+  }
+
+  .desktop-cart-item-controls span {
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 22px;
+    text-align: center;
+    color: #222;
+  }
+
+  /* Sidebar footer / checkout */
+  .desktop-cart-footer {
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 20px 24px 24px;
+  }
+
+  .desktop-cart-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .desktop-cart-summary-label {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .desktop-cart-summary-total {
+    font-size: 22px;
+    font-weight: 800;
+    color: #222;
+  }
+
+  .desktop-checkout-btn {
+    width: 100%;
+    background: #2d5a3d;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .desktop-checkout-btn:hover {
+    background: #234a31;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(45, 90, 61, 0.35);
+  }
+
+  .desktop-checkout-btn:active {
+    transform: translateY(0);
+  }
+
+  .desktop-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+
+  .desktop-clear-btn:hover {
+    color: #2d5a3d;
+    background: #f0f5f1;
+  }
+
+  .desktop-clear-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ---- Modals (centered on desktop) ---- */
+  .modal-overlay {
+    justify-content: center !important;
+    align-items: center !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    border-radius: 24px !important;
+    margin: auto !important;
+    max-height: 80vh !important;
+    max-width: 480px !important;
+    animation: popIn 0.25s ease !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-product {
+    border-radius: 24px !important;
+    margin: auto !important;
+    max-width: 480px !important;
+    max-height: 85vh !important;
+    animation: popIn 0.25s ease !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+  }
+
+  .location-modal-content {
+    border-radius: 24px !important;
+    margin: auto !important;
+    max-width: 640px !important;
+    max-height: 85vh !important;
+    animation: popIn 0.25s ease !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+  }
+
+  .menu-panel {
+    width: 420px !important;
+    max-width: 420px !important;
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ---- Hide mobile elements ---- */
+  .mobile-cart-screen {
+    display: none !important;
+  }
+
+  .mobile-cart-bar {
+    display: none !important;
+  }
+
+  .home-fab {
+    display: none !important;
+  }
+}
+
+/* ---- 4-column grid on wide screens ---- */
+@media (min-width: 1100px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }

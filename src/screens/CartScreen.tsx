@@ -25,7 +25,7 @@ const CartScreen = ({ cartProducts, onBack, onClear, addToCart, removeFromCart }
       </div>
       <button style={styles.clearCartBtn} onClick={onClear}>
         <TrashIcon />
-        <span style={{ color: "#e74c3c", fontSize: 15 }}>Savatni tozalash</span>
+        <span style={{ color: "#2d5a3d", fontSize: 15 }}>Savatni tozalash</span>
       </button>
     </div>
 

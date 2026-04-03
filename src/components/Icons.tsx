@@ -158,7 +158,7 @@ export const ArrowUpIcon = () => (
 );
 
 export const CrosshairIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" strokeWidth="2">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d5a3d" strokeWidth="2">
     <circle cx="12" cy="12" r="4" />
     <line x1="12" y1="2" x2="12" y2="6" />
     <line x1="12" y1="18" x2="12" y2="22" />

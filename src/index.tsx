@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { styles } from './styles';
-import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon } from './components/Icons';
+import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
 import { MOCK_PRODUCTS } from './data/products';
 import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
@@ -76,9 +76,9 @@ const Index = () => {
   }));
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="app-container">
       {/* Profile & Delivery */}
-      <div style={styles.profileRow}>
+      <div style={styles.profileRow} className="profile-row">
         <div style={styles.avatar}><UserIcon /></div>
         <div style={styles.deliveryToggle}>
           <button
@@ -97,40 +97,100 @@ const Index = () => {
         <button style={styles.menuBtn} onClick={() => setMenuOpen(true)}><MenuIcon /></button>
       </div>
 
-      {/* HOME SCREEN */}
-      {screen === "home" && (
-        <HomeScreen
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          filteredProducts={filteredProducts}
-          cart={cart}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-          onProductSelect={setSelectedProduct}
-        />
-      )}
+      {/* Desktop: flex layout with sidebar */}
+      <div className="desktop-layout">
+        {/* Main content area */}
+        <div className="desktop-main">
+          {/* HOME SCREEN */}
+          {screen === "home" && (
+            <HomeScreen
+              activeCategory={activeCategory}
+              setActiveCategory={setActiveCategory}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filteredProducts={filteredProducts}
+              cart={cart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              onProductSelect={setSelectedProduct}
+            />
+          )}
 
-      {/* CART SCREEN */}
+          {/* CART SCREEN (mobile only) */}
+          {screen === "cart" && (
+            <div className="mobile-cart-screen">
+              <CartScreen
+                cartProducts={cartProducts}
+                onBack={() => setScreen("home")}
+                onClear={clearCart}
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Desktop sidebar cart */}
+        <div className="desktop-sidebar">
+          <div className="desktop-sidebar-header">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2>Savat {totalItems > 0 && <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>({totalItems})</span>}</h2>
+              {totalItems > 0 && (
+                <button className="desktop-clear-btn" onClick={clearCart}>
+                  <TrashIcon />
+                  Tozalash
+                </button>
+              )}
+            </div>
+          </div>
+
+          {totalItems === 0 ? (
+            <div className="desktop-sidebar-empty">
+              <ShoppingBagIcon />
+              <p>Savatingiz hali bo'sh</p>
+              <p style={{ fontSize: 13, color: "#ccc" }}>Mahsulotlarni qo'shing</p>
+            </div>
+          ) : (
+            <>
+              <div className="desktop-cart-items">
+                {cartProducts.map(({ product, qty }) => (
+                  <div key={product.id} className="desktop-cart-item">
+                    <img src={product.image} alt={product.name} />
+                    <div className="desktop-cart-item-info">
+                      <div className="desktop-cart-item-name">{product.name}</div>
+                      <div className="desktop-cart-item-price">{formatPrice(product.price)} so'm</div>
+                    </div>
+                    <div className="desktop-cart-item-controls">
+                      <button onClick={() => removeFromCart(product.id)}>−</button>
+                      <span>{qty}</span>
+                      <button onClick={() => addToCart(product.id)}>+</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="desktop-cart-footer">
+                <div className="desktop-cart-summary">
+                  <span className="desktop-cart-summary-label">Jami:</span>
+                  <span className="desktop-cart-summary-total">{formatPrice(totalPrice)} so'm</span>
+                </div>
+                <button className="desktop-checkout-btn">
+                  Buyurtmani rasmiylashtirish
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Home FAB (mobile only) */}
       {screen === "cart" && (
-        <CartScreen
-          cartProducts={cartProducts}
-          onBack={() => setScreen("home")}
-          onClear={clearCart}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-        />
+        <button style={styles.homeFab} onClick={() => setScreen("home")} className="home-fab"><HomeIcon /></button>
       )}
 
-      {/* Home FAB */}
-      {screen === "cart" && (
-        <button style={styles.homeFab} onClick={() => setScreen("home")}><HomeIcon /></button>
-      )}
-
-      {/* Cart Bar */}
+      {/* Mobile Cart Bar */}
       {totalItems > 0 && (
-        <div style={styles.cartBar}>
+        <div style={styles.cartBar} className="mobile-cart-bar">
           <div style={styles.cartInfo}>
             <span>Buyurtma qiymati:</span>
             <span style={{ fontWeight: 700 }}>{formatPrice(totalPrice)}</span>

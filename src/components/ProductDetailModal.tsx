@@ -11,8 +11,8 @@ interface Props {
 }
 
 const ProductDetailModal = ({ product, quantity, onClose, onAdd, onRemove }: Props) => (
-  <div style={styles.modalOverlay} onClick={onClose}>
-    <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+  <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
+    <div style={styles.modal} className="modal-product" onClick={(e) => e.stopPropagation()}>
       <div style={styles.modalImageWrap}>
         <button style={styles.modalFav}><HeartIcon /></button>
         <button style={styles.modalClose} onClick={onClose}><CloseIcon /></button>

@@ -12,7 +12,7 @@ interface Props {
 
 const MenuSidebar = ({ selectedLanguage, onClose, onBranchOpen, onLanguageOpen }: Props) => (
   <div style={styles.menuOverlay} onClick={onClose}>
-    <div style={styles.menuPanel} onClick={(e) => e.stopPropagation()}>
+    <div style={styles.menuPanel} className="menu-panel" onClick={(e) => e.stopPropagation()}>
       <div style={styles.menuHeader}>
         <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "#222" }}>Menyu</h2>
         <button style={styles.menuCloseBtn} onClick={onClose}><CloseIcon /></button>

@@ -43,8 +43,8 @@ const LocationModal = ({ position, address, onPositionChange, onAddressChange, o
   };
 
   return (
-    <div style={styles.modalOverlay} onClick={onClose}>
-      <div style={styles.locationModal} onClick={(e) => e.stopPropagation()}>
+    <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
+      <div style={styles.locationModal} className="location-modal-content" onClick={(e) => e.stopPropagation()}>
         <div style={styles.branchHeader}>
           <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "#222" }}>Manzilni tanlang</h2>
           <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>

@@ -28,7 +28,7 @@ const HomeScreen = ({
   onProductSelect,
 }: Props) => (
   <>
-    <div style={styles.searchBox}>
+    <div style={styles.searchBox} className="search-box">
       <SearchIcon />
       <input
         style={styles.searchInput}
@@ -38,7 +38,7 @@ const HomeScreen = ({
       />
     </div>
 
-    <div style={styles.categories}>
+    <div style={styles.categories} className="categories-row">
       {CATEGORIES.map((cat) => (
         <button
           key={cat}
@@ -51,12 +51,12 @@ const HomeScreen = ({
       ))}
     </div>
 
-    <h1 style={styles.sectionTitle}>{activeCategory}</h1>
+    <h1 style={styles.sectionTitle} className="section-title">{activeCategory}</h1>
 
-    <div style={styles.grid}>
+    <div style={styles.grid} className="product-grid">
       {filteredProducts.map((product) => (
         <div key={product.id} style={styles.card}>
-          <div style={styles.cardImageWrap} onClick={() => onProductSelect(product)}>
+          <div style={styles.cardImageWrap} className="card-image-wrap" onClick={() => onProductSelect(product)}>
             <img src={product.image} alt={product.name} style={styles.cardImage} loading="lazy" />
             {cart[product.id] ? (
               <div style={styles.cardCounter}>

@@ -11,8 +11,8 @@ interface Props {
 }
 
 const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClose }: Props) => (
-  <div style={styles.modalOverlay} onClick={onClose}>
-    <div style={styles.orderTypeModal} onClick={(e) => e.stopPropagation()}>
+  <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
+    <div style={styles.orderTypeModal} className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div style={styles.orderTypeHeader}>
         <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "#222" }}>Buyurtma turini tanlang</h2>
         <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
@@ -30,7 +30,7 @@ const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClos
             <div style={{ fontSize: 14, color: "#999", marginTop: 4 }}>Manzilingizga yetkazib beramiz</div>
           </div>
           {deliveryMode === "delivery" && (
-            <Check size={28} color="#e74c3c" strokeWidth={2.5} className="check-icon" />
+            <Check size={28} color="#2d5a3d" strokeWidth={2.5} className="check-icon" />
           )}
         </button>
         <button
@@ -45,7 +45,7 @@ const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClos
             <div style={{ fontSize: 14, color: "#999", marginTop: 4 }}>Filialni tanlang va olib keting</div>
           </div>
           {deliveryMode === "pickup" && (
-            <Check size={28} color="#e74c3c" strokeWidth={2.5} className="check-icon" />
+            <Check size={28} color="#2d5a3d" strokeWidth={2.5} className="check-icon" />
           )}
         </button>
       </div>

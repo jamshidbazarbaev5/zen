@@ -10,8 +10,8 @@ interface Props {
 }
 
 const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => (
-  <div style={styles.modalOverlay} onClick={onClose}>
-    <div style={styles.languageModal} onClick={(e) => e.stopPropagation()}>
+  <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
+    <div style={styles.languageModal} className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div style={styles.languageHeader}>
         <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "#222" }}>Tilni tanlang</h2>
         <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
@@ -30,7 +30,7 @@ const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => (
               {lang.name}
             </span>
             {selectedLanguage === lang.code && (
-              <Check size={24} color="#e74c3c" strokeWidth={2.5} className="check-icon" />
+              <Check size={24} color="#2d5a3d" strokeWidth={2.5} className="check-icon" />
             )}
           </button>
         ))}
