@@ -1,6 +1,7 @@
 import type { Product } from '../types';
 import { styles } from '../styles';
 import { HeartIcon, CloseIcon } from './Icons';
+import { formatPrice } from '../utils/formatPrice';
 
 interface Props {
   product: Product;
@@ -16,11 +17,12 @@ const ProductDetailModal = ({ product, quantity, onClose, onAdd, onRemove }: Pro
       <div style={styles.modalImageWrap}>
         <button style={styles.modalFav}><HeartIcon /></button>
         <button style={styles.modalClose} onClick={onClose}><CloseIcon /></button>
-        <img src={product.image} alt={product.name} style={styles.modalImage} />
+        <img src={product.image_url} alt={product.name} style={styles.modalImage} />
       </div>
       <div style={styles.modalBody}>
         <h2 style={styles.modalTitle}>{product.name}</h2>
         <p style={styles.modalDesc}>{product.description}</p>
+        <p style={styles.modalPrice}>{formatPrice(Number(product.price))} so'm</p>
         <div style={styles.modalCounter}>
           <button style={styles.counterBtnLg} onClick={() => onRemove(product.id)}>−</button>
           <span style={styles.counterNumLg}>{quantity}</span>

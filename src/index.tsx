@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { styles } from './styles';
 import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
-import { MOCK_PRODUCTS } from './data/products';
 import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
-import type { Product, Screen, DeliveryMode, Branch } from './types';
+import type { Product, MenuCategory, Screen, DeliveryMode, Branch } from './types';
+import { getMenu } from './api';
 
 import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import MenuSidebar from './components/MenuSidebar';
 import LanguageModal from './components/LanguageModal';
@@ -17,8 +18,11 @@ import LocationModal from './components/LocationModal';
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
-  const [activeCategory, setActiveCategory] = useState("Kombo");
+  const [categories, setCategories] = useState<MenuCategory[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [activeCategory, setActiveCategory] = useState("");
   const [cart, setCart] = useState<Record<number, number>>({});
+  const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>("pickup");
@@ -32,6 +36,12 @@ const Index = () => {
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as "light" | "dark") || "light";
+    }
+    return "light";
+  });
 
   useEffect(() => {
     if (selectedProduct || menuOpen || languageModalOpen || orderTypeModalOpen || branchModalOpen || locationModalOpen) {
@@ -48,9 +58,34 @@ const Index = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const lang = selectedLanguage === "uz" ? "uz" : selectedLanguage === "en" ? "en" : "ru";
+    setLoading(true);
+    getMenu(lang)
+      .then((data) => {
+        setCategories(data);
+        const allProducts: Product[] = data.flatMap((cat) =>
+          cat.products.map((p) => ({ ...p, category: cat.name }))
+        );
+        setProducts(allProducts);
+        if (data.length > 0 && (!activeCategory || !data.some((c) => c.name === activeCategory))) {
+          setActiveCategory(data[0].name);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [selectedLanguage]);
+
+  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const filteredProducts = MOCK_PRODUCTS.filter(
+  const filteredProducts = products.filter(
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -65,13 +100,13 @@ const Index = () => {
   const clearCart = () => setCart({});
 
   const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const p = MOCK_PRODUCTS.find((x) => x.id === Number(id));
-    return sum + (p ? p.price * qty : 0);
+    const p = products.find((x) => x.id === Number(id));
+    return sum + (p ? Number(p.price) * qty : 0);
   }, 0);
 
   const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
   const cartProducts = Object.entries(cart).map(([id, qty]) => ({
-    product: MOCK_PRODUCTS.find((x) => x.id === Number(id))!,
+    product: products.find((x) => x.id === Number(id))!,
     qty,
   }));
 
@@ -109,11 +144,18 @@ const Index = () => {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               filteredProducts={filteredProducts}
+              categories={categories.map((c) => c.name)}
               cart={cart}
               addToCart={addToCart}
               removeFromCart={removeFromCart}
               onProductSelect={setSelectedProduct}
+              loading={loading}
             />
+          )}
+
+          {/* NOTIFICATIONS SCREEN */}
+          {screen === "notifications" && (
+            <NotificationsScreen onBack={() => setScreen("home")} />
           )}
 
           {/* CART SCREEN (mobile only) */}
@@ -155,10 +197,10 @@ const Index = () => {
               <div className="desktop-cart-items">
                 {cartProducts.map(({ product, qty }) => (
                   <div key={product.id} className="desktop-cart-item">
-                    <img src={product.image} alt={product.name} />
+                    <img src={product.image_url} alt={product.name} />
                     <div className="desktop-cart-item-info">
                       <div className="desktop-cart-item-name">{product.name}</div>
-                      <div className="desktop-cart-item-price">{formatPrice(product.price)} so'm</div>
+                      <div className="desktop-cart-item-price">{formatPrice(Number(product.price))} so'm</div>
                     </div>
                     <div className="desktop-cart-item-controls">
                       <button onClick={() => removeFromCart(product.id)}>−</button>
@@ -226,9 +268,12 @@ const Index = () => {
       {menuOpen && (
         <MenuSidebar
           selectedLanguage={selectedLanguage}
+          theme={theme}
           onClose={() => setMenuOpen(false)}
           onBranchOpen={() => setBranchModalOpen(true)}
           onLanguageOpen={() => setLanguageModalOpen(true)}
+          onToggleTheme={toggleTheme}
+          onNotifications={() => { setScreen("notifications"); setMenuOpen(false); }}
         />
       )}
 

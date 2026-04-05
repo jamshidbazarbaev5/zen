@@ -36,10 +36,10 @@ const CartScreen = ({ cartProducts, onBack, onClear, addToCart, removeFromCart }
     )}
     {cartProducts.map(({ product, qty }) => (
       <div key={product.id} style={styles.cartItem}>
-        <img src={product.image} alt={product.name} style={styles.cartItemImage} />
+        <img src={product.image_url} alt={product.name} style={styles.cartItemImage} />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: "#222" }}>{product.name}</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#222", marginTop: 4 }}>{formatPrice(product.price)}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#222", marginTop: 4 }}>{formatPrice(Number(product.price))}</div>
         </div>
         <div style={styles.cartItemControls}>
           <button style={styles.cartControlBtn} onClick={() => removeFromCart(product.id)}>

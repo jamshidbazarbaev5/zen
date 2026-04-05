@@ -1,6 +1,5 @@
 import { styles } from '../styles';
 import { SearchIcon } from '../components/Icons';
-import { CATEGORIES } from '../data/products';
 import type { Product } from '../types';
 import { formatPrice } from '../utils/formatPrice';
 
@@ -10,10 +9,12 @@ interface Props {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   filteredProducts: Product[];
+  categories: string[];
   cart: Record<number, number>;
   addToCart: (id: number) => void;
   removeFromCart: (id: number) => void;
   onProductSelect: (product: Product) => void;
+  loading?: boolean;
 }
 
 const HomeScreen = ({
@@ -22,10 +23,12 @@ const HomeScreen = ({
   searchQuery,
   setSearchQuery,
   filteredProducts,
+  categories,
   cart,
   addToCart,
   removeFromCart,
   onProductSelect,
+  loading,
 }: Props) => (
   <>
     <div style={styles.searchBox} className="search-box">
@@ -39,7 +42,7 @@ const HomeScreen = ({
     </div>
 
     <div style={styles.categories} className="categories-row">
-      {CATEGORIES.map((cat) => (
+      {categories.map((cat) => (
         <button
           key={cat}
           onClick={() => setActiveCategory(cat)}
@@ -57,7 +60,7 @@ const HomeScreen = ({
       {filteredProducts.map((product) => (
         <div key={product.id} style={styles.card}>
           <div style={styles.cardImageWrap} className="card-image-wrap" onClick={() => onProductSelect(product)}>
-            <img src={product.image} alt={product.name} style={styles.cardImage} loading="lazy" />
+            <img src={product.image_url} alt={product.name} style={styles.cardImage} loading="lazy" />
             {cart[product.id] ? (
               <div style={styles.cardCounter}>
                 <button style={styles.counterBtn} onClick={(e) => { e.stopPropagation(); removeFromCart(product.id); }}>−</button>
@@ -68,7 +71,7 @@ const HomeScreen = ({
               <button style={styles.addBtn} onClick={(e) => { e.stopPropagation(); addToCart(product.id); }}>+</button>
             )}
           </div>
-          <div style={styles.cardPrice}>{formatPrice(product.price)}</div>
+          <div style={styles.cardPrice}>{formatPrice(Number(product.price))}</div>
           <div style={styles.cardName}>{product.name}</div>
         </div>
       ))}
