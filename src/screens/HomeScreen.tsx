@@ -14,7 +14,6 @@ interface Props {
   addToCart: (id: number) => void;
   removeFromCart: (id: number) => void;
   onProductSelect: (product: Product) => void;
-  loading?: boolean;
 }
 
 const HomeScreen = ({
@@ -28,7 +27,6 @@ const HomeScreen = ({
   addToCart,
   removeFromCart,
   onProductSelect,
-  loading,
 }: Props) => (
   <>
     <div style={styles.searchBox} className="search-box">

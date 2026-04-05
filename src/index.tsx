@@ -22,7 +22,7 @@ const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState("");
   const [cart, setCart] = useState<Record<number, number>>({});
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>("pickup");
@@ -149,7 +149,6 @@ const Index = () => {
               addToCart={addToCart}
               removeFromCart={removeFromCart}
               onProductSelect={setSelectedProduct}
-              loading={loading}
             />
           )}
 
