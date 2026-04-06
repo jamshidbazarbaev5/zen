@@ -64,17 +64,25 @@ const Index = () => {
   }, [theme]);
 
   useEffect(() => {
-    const lang = selectedLanguage === "uz" ? "uz" : selectedLanguage === "en" ? "en" : "ru";
+    const lang = ["uz", "ru", "en", "kk"].includes(selectedLanguage) ? selectedLanguage : "ru";
     setLoading(true);
+    const applyData = (data: MenuCategory[]) => {
+      setCategories(data);
+      const allProducts: Product[] = data.flatMap((cat) =>
+        cat.products.map((p) => ({ ...p, category: cat.name }))
+      );
+      setProducts(allProducts);
+      if (data.length > 0 && (!activeCategory || !data.some((c) => c.name === activeCategory))) {
+        setActiveCategory(data[0].name);
+      }
+    };
+
     getMenu(lang)
       .then((data) => {
-        setCategories(data);
-        const allProducts: Product[] = data.flatMap((cat) =>
-          cat.products.map((p) => ({ ...p, category: cat.name }))
-        );
-        setProducts(allProducts);
-        if (data.length > 0 && (!activeCategory || !data.some((c) => c.name === activeCategory))) {
-          setActiveCategory(data[0].name);
+        if (data.length > 0) {
+          applyData(data);
+        } else if (lang !== "ru") {
+          return getMenu("ru").then(applyData);
         }
       })
       .catch(console.error)
@@ -124,7 +132,7 @@ const Index = () => {
           </button>
         </div>
         <div
-          style={{ textAlign: "center", fontSize: 12, color: "#666", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer", textDecoration: "underline" }}
+          style={{ textAlign: "center", fontSize: 12, color: "var(--text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer", textDecoration: "underline" }}
           onClick={() => deliveryMode === "delivery" ? setLocationModalOpen(true) : setBranchModalOpen(true)}
         >
           {deliveryMode === "delivery" && deliveryAddress ? deliveryAddress : selectedBranch.name}

@@ -14,7 +14,7 @@ const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClos
   <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
     <div style={styles.orderTypeModal} className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div style={styles.orderTypeHeader}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "#222" }}>Buyurtma turini tanlang</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Buyurtma turini tanlang</h2>
         <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
       </div>
       <div style={styles.orderTypeList}>
@@ -26,11 +26,11 @@ const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClos
             <TruckIcon />
           </div>
           <div style={{ flex: 1, textAlign: "left" }}>
-            <div style={{ fontSize: 18, fontWeight: 600, color: "#222" }}>Yetkazib berish</div>
-            <div style={{ fontSize: 14, color: "#999", marginTop: 4 }}>Manzilingizga yetkazib beramiz</div>
+            <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>Yetkazib berish</div>
+            <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>Manzilingizga yetkazib beramiz</div>
           </div>
           {deliveryMode === "delivery" && (
-            <Check size={28} color="#2d5a3d" strokeWidth={2.5} className="check-icon" />
+            <Check size={28} color="var(--accent)" strokeWidth={2.5} className="check-icon" />
           )}
         </button>
         <button
@@ -41,11 +41,11 @@ const OrderTypeModal = ({ deliveryMode, onSelectDelivery, onSelectPickup, onClos
             <MapPinIcon />
           </div>
           <div style={{ flex: 1, textAlign: "left" }}>
-            <div style={{ fontSize: 18, fontWeight: 600, color: "#222" }}>Olib ketish</div>
-            <div style={{ fontSize: 14, color: "#999", marginTop: 4 }}>Filialni tanlang va olib keting</div>
+            <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>Olib ketish</div>
+            <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>Filialni tanlang va olib keting</div>
           </div>
           {deliveryMode === "pickup" && (
-            <Check size={28} color="#2d5a3d" strokeWidth={2.5} className="check-icon" />
+            <Check size={28} color="var(--accent)" strokeWidth={2.5} className="check-icon" />
           )}
         </button>
       </div>

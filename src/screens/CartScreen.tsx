@@ -21,11 +21,11 @@ const CartScreen = ({ cartProducts, onBack, onClear, addToCart, removeFromCart }
     <div style={styles.cartHeader}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button style={styles.backBtn} onClick={onBack}><ArrowLeftIcon /></button>
-        <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "#222" }}>Savat</h2>
+        <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Savat</h2>
       </div>
       <button style={styles.clearCartBtn} onClick={onClear}>
         <TrashIcon />
-        <span style={{ color: "#2d5a3d", fontSize: 15 }}>Savatni tozalash</span>
+        <span style={{ color: "var(--accent)", fontSize: 15 }}>Savatni tozalash</span>
       </button>
     </div>
 
@@ -38,14 +38,14 @@ const CartScreen = ({ cartProducts, onBack, onClear, addToCart, removeFromCart }
       <div key={product.id} style={styles.cartItem}>
         <img src={product.image_url} alt={product.name} style={styles.cartItemImage} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 16, fontWeight: 600, color: "#222" }}>{product.name}</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#222", marginTop: 4 }}>{formatPrice(Number(product.price))}</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>{product.name}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginTop: 4 }}>{formatPrice(Number(product.price))}</div>
         </div>
         <div style={styles.cartItemControls}>
           <button style={styles.cartControlBtn} onClick={() => removeFromCart(product.id)}>
             <MinusIcon />
           </button>
-          <span style={{ fontSize: 16, fontWeight: 600, minWidth: 24, textAlign: "center" }}>{qty}</span>
+          <span style={{ fontSize: 16, fontWeight: 600, minWidth: 24, textAlign: "center", color: "var(--text-primary)" }}>{qty}</span>
           <button style={styles.cartControlBtnPlus} onClick={() => addToCart(product.id)}>+</button>
         </div>
       </div>

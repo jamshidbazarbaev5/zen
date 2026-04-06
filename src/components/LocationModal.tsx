@@ -46,7 +46,7 @@ const LocationModal = ({ position, address, onPositionChange, onAddressChange, o
     <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
       <div style={styles.locationModal} className="location-modal-content" onClick={(e) => e.stopPropagation()}>
         <div style={styles.branchHeader}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "#222" }}>Manzilni tanlang</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Manzilni tanlang</h2>
           <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
         </div>
         <div style={{ height: 400, width: "100%", position: "relative" }}>
@@ -75,7 +75,7 @@ const LocationModal = ({ position, address, onPositionChange, onAddressChange, o
           </button>
         </div>
         {address && (
-          <div style={{ padding: "12px 20px", fontSize: 14, color: "#666", borderTop: "1px solid #f0f0f0" }}>
+          <div style={{ padding: "12px 20px", fontSize: 14, color: "var(--text-secondary)", borderTop: "1px solid var(--border-color)" }}>
             <MapPinIcon /> {address}
           </div>
         )}

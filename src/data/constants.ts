@@ -4,6 +4,7 @@ export const LANGUAGES: Language[] = [
   { code: "uz", name: "O'zbekcha", icon: "\u{1F1FA}\u{1F1FF}" },
   { code: "ru", name: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439", icon: "\u{1F1F7}\u{1F1FA}" },
   { code: "en", name: "English", icon: "\u{1F1EC}\u{1F1E7}" },
+  { code: "kk", name: "Қазақша", icon: "\u{1F1F0}\u{1F1FF}" },
 ];
 
 export const BRANCHES: Branch[] = [
