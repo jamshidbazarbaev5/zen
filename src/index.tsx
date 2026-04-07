@@ -4,8 +4,10 @@ import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUp
 import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Branch } from './types';
-import { getMenu, authenticateTelegram } from './api';
+import { getMenu, authenticateTelegram, createOrder } from './api';
 import { isTelegram, getInitData, getPhotoUrl } from './telegram';
+import TimePickerModal from './components/TimePickerModal';
+import type { CreateOrderRequest } from './types';
 
 import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
@@ -35,10 +37,11 @@ const Index = () => {
   const [selectedBranch, setSelectedBranch] = useState<Branch>(BRANCHES[0]);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(false);
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string>("");
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
@@ -48,21 +51,19 @@ const Index = () => {
 
   useEffect(() => {
     if (isTelegram()) {
-      authenticateTelegram(getInitData())
-        .then((res) => setDebugInfo("Access: " + res.access.slice(0, 20) + "... | Customer: " + res.customer.name + " | needs_phone: " + res.needs_phone))
-        .catch((err) => setDebugInfo("Auth error: " + String(err)));
+      authenticateTelegram(getInitData()).catch(console.error);
       setPhotoUrl(getPhotoUrl());
     }
   }, []);
 
   useEffect(() => {
-    if (selectedProduct || menuOpen || languageModalOpen || orderTypeModalOpen || branchModalOpen || locationModalOpen) {
+    if (selectedProduct || menuOpen || languageModalOpen || orderTypeModalOpen || branchModalOpen || locationModalOpen || timePickerOpen) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
     }
     return () => { document.body.classList.remove('modal-open'); };
-  }, [selectedProduct, menuOpen, languageModalOpen, orderTypeModalOpen, branchModalOpen, locationModalOpen]);
+  }, [selectedProduct, menuOpen, languageModalOpen, orderTypeModalOpen, branchModalOpen, locationModalOpen, timePickerOpen]);
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -119,6 +120,39 @@ const Index = () => {
     });
   const clearCart = () => setCart({});
 
+  const handleCheckout = () => setTimePickerOpen(true);
+
+  const handleOrderSubmit = async (time: string) => {
+    setOrderLoading(true);
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const payload: CreateOrderRequest = {
+        delivery_type: deliveryMode,
+        scheduled_time: `${today}T${time}:00`,
+        items: Object.entries(cart).map(([id, qty]) => {
+          const product = products.find((p) => p.id === Number(id))!;
+          return { product_iiko_id: product.iiko_id, quantity: qty, modifiers: [] };
+        }),
+        use_balance: false,
+        ...(deliveryMode === "pickup"
+          ? { branch_id: selectedBranch.id }
+          : { address: deliveryAddress, lat: deliveryPosition[0], lon: deliveryPosition[1] }),
+      };
+      const result = await createOrder(payload);
+      clearCart();
+      setTimePickerOpen(false);
+      setScreen("notifications");
+      if (result.payment_url) {
+        window.open(result.payment_url, "_blank");
+      }
+    } catch (err) {
+      console.error("Order failed:", err);
+      alert("Buyurtma yuborishda xatolik yuz berdi");
+    } finally {
+      setOrderLoading(false);
+    }
+  };
+
   const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
     const p = products.find((x) => x.id === Number(id));
     return sum + (p ? Number(p.price) * qty : 0);
@@ -132,12 +166,6 @@ const Index = () => {
 
   return (
     <div style={styles.container} className="app-container">
-      {/* Debug banner — remove later */}
-      {debugInfo && (
-        <div style={{ background: "#222", color: "#0f0", padding: 8, fontSize: 11, wordBreak: "break-all", fontFamily: "monospace" }}>
-          {debugInfo}
-        </div>
-      )}
       {/* Profile & Delivery */}
       <div style={styles.profileRow} className="profile-row">
         <div style={styles.avatar}>
@@ -247,7 +275,7 @@ const Index = () => {
                   <span className="desktop-cart-summary-label">Jami:</span>
                   <span className="desktop-cart-summary-total">{formatPrice(totalPrice)} so'm</span>
                 </div>
-                <button className="desktop-checkout-btn">
+                <button className="desktop-checkout-btn" onClick={handleCheckout}>
                   Buyurtmani rasmiylashtirish
                 </button>
               </div>
@@ -277,7 +305,7 @@ const Index = () => {
               <span>{formatPrice(totalPrice)}</span>
             </button>
           ) : (
-            <button style={styles.cartButton}>
+            <button style={styles.cartButton} onClick={handleCheckout}>
               <span>Buyurtmani rasmiylashtirish</span>
               <span>{formatPrice(totalPrice)}</span>
             </button>
@@ -348,6 +376,14 @@ const Index = () => {
           onPositionChange={setDeliveryPosition}
           onAddressChange={setDeliveryAddress}
           onClose={() => setLocationModalOpen(false)}
+        />
+      )}
+
+      {timePickerOpen && (
+        <TimePickerModal
+          onConfirm={handleOrderSubmit}
+          onClose={() => setTimePickerOpen(false)}
+          loading={orderLoading}
         />
       )}
 
