@@ -12,18 +12,29 @@ export const getMenu = async (lang: string): Promise<MenuCategory[]> => {
   return data;
 };
 
-export const authenticateTelegram = async (initData: string): Promise<string> => {
-  const { data } = await api.post<{ token: string }>("/auth/telegram/", {
+interface TelegramAuthResponse {
+  access: string;
+  refresh: string;
+  needs_phone: boolean;
+  customer: {
+    id: number;
+    telegram_id: number;
+    name: string;
+    phone: string;
+    lang: string;
+    balance: string;
+    total_spent: string;
+    is_active: boolean;
+  };
+}
+
+export const authenticateTelegram = async (initData: string): Promise<TelegramAuthResponse> => {
+  const { data } = await api.post<TelegramAuthResponse>("/auth/telegram/", {
     init_data: initData,
   });
-  const token = data.token;
-  console.log("Telegram auth token:", token);
-  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-  const profile = await api.get("/customers/me/");
-  console.log("Profile data:", profile.data);
-
-  return token;
+  console.log("Telegram auth response:", data);
+  api.defaults.headers.common["Authorization"] = `Bearer ${data.access}`;
+  return data;
 };
 
 export default api;

@@ -49,7 +49,7 @@ const Index = () => {
   useEffect(() => {
     if (isTelegram()) {
       authenticateTelegram(getInitData())
-        .then((token) => setDebugInfo("Token: " + token))
+        .then((res) => setDebugInfo("Access: " + res.access.slice(0, 20) + "... | Customer: " + res.customer.name + " | needs_phone: " + res.needs_phone))
         .catch((err) => setDebugInfo("Auth error: " + String(err)));
       setPhotoUrl(getPhotoUrl());
     }
