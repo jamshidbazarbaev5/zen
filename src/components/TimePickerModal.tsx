@@ -4,9 +4,10 @@ interface Props {
   onConfirm: (time: string) => void;
   onClose: () => void;
   loading?: boolean;
+  error?: string | null;
 }
 
-const TimePickerModal = ({ onConfirm, onClose, loading }: Props) => {
+const TimePickerModal = ({ onConfirm, onClose, loading, error }: Props) => {
   const now = new Date();
   now.setMinutes(now.getMinutes() + 30);
   const defaultTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -52,6 +53,14 @@ const TimePickerModal = ({ onConfirm, onClose, loading }: Props) => {
         >
           {loading ? "Yuborilmoqda..." : "Tasdiqlash"}
         </button>
+        {error && (
+          <div style={{
+            marginTop: 12, padding: 10, borderRadius: 8, background: "#fee",
+            color: "#c62828", fontSize: 12, textAlign: "left", wordBreak: "break-all",
+          }}>
+            {error}
+          </div>
+        )}
       </div>
     </div>
   );

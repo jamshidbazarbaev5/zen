@@ -39,6 +39,7 @@ const Index = () => {
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -124,6 +125,7 @@ const Index = () => {
 
   const handleOrderSubmit = async (time: string) => {
     setOrderLoading(true);
+    setOrderError(null);
     try {
       const today = new Date().toISOString().slice(0, 10);
       const payload: CreateOrderRequest = {
@@ -145,9 +147,11 @@ const Index = () => {
       if (result.payment_url) {
         window.open(result.payment_url, "_blank");
       }
-    } catch (err) {
-      console.error("Order failed:", err);
-      alert("Buyurtma yuborishda xatolik yuz berdi");
+    } catch (err: any) {
+      const msg = err?.response?.data
+        ? JSON.stringify(err.response.data)
+        : err?.message || String(err);
+      setOrderError(`${err?.response?.status || "?"}: ${msg}`);
     } finally {
       setOrderLoading(false);
     }
@@ -382,8 +386,9 @@ const Index = () => {
       {timePickerOpen && (
         <TimePickerModal
           onConfirm={handleOrderSubmit}
-          onClose={() => setTimePickerOpen(false)}
+          onClose={() => { setTimePickerOpen(false); setOrderError(null); }}
           loading={orderLoading}
+          error={orderError}
         />
       )}
 
