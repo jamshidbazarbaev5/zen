@@ -4,7 +4,8 @@ import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUp
 import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Branch } from './types';
-import { getMenu } from './api';
+import { getMenu, authenticateTelegram } from './api';
+import { isTelegram, getInitData, getPhotoUrl } from './telegram';
 
 import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
@@ -36,12 +37,20 @@ const Index = () => {
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
     }
     return "light";
   });
+
+  useEffect(() => {
+    if (isTelegram()) {
+      authenticateTelegram(getInitData()).catch(console.error);
+      setPhotoUrl(getPhotoUrl());
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedProduct || menuOpen || languageModalOpen || orderTypeModalOpen || branchModalOpen || locationModalOpen) {
@@ -122,7 +131,13 @@ const Index = () => {
     <div style={styles.container} className="app-container">
       {/* Profile & Delivery */}
       <div style={styles.profileRow} className="profile-row">
-        <div style={styles.avatar}><UserIcon /></div>
+        <div style={styles.avatar}>
+          {photoUrl ? (
+            <img src={photoUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+          ) : (
+            <UserIcon />
+          )}
+        </div>
         <div style={styles.deliveryToggle}>
           <button
             onClick={() => setOrderTypeModalOpen(true)}
