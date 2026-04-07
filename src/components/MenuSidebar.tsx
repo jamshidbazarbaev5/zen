@@ -28,7 +28,7 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
               onClick={() => {
                 if (item.label === "Filiallar") {
                   onBranchOpen();
-                } else if (item.label === "Xabarnoma") {
+                } else if (item.label === "Buyurtmalar") {
                   onNotifications();
                   return;
                 }

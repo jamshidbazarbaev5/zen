@@ -128,17 +128,17 @@ const Index = () => {
     setOrderError(null);
     try {
       const today = new Date().toISOString().slice(0, 10);
+      const items = Object.entries(cart).map(([id, qty]) => ({
+        product_id: Number(id),
+        quantity: qty,
+        modifiers: [] as { modifier_id: number; quantity: number }[],
+      }));
       const payload: CreateOrderRequest = {
-        delivery_type: deliveryMode,
-        scheduled_time: `${today}T${time}:00`,
-        items: Object.entries(cart).map(([id, qty]) => {
-          const product = products.find((p) => p.id === Number(id))!;
-          return { product_iiko_id: product.iiko_id, quantity: qty, modifiers: [] };
-        }),
+        pickup_time: `${today}T${time}:00+05:00`,
+        total_amount: totalPrice.toFixed(2),
         use_balance: false,
-        ...(deliveryMode === "pickup"
-          ? { branch_id: selectedBranch.id }
-          : { address: deliveryAddress, lat: deliveryPosition[0], lon: deliveryPosition[1] }),
+        order_type: deliveryMode,
+        items,
       };
       console.log("ORDER PAYLOAD:", JSON.stringify(payload, null, 2));
       const result = await createOrder(payload);

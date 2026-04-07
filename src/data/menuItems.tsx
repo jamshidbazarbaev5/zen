@@ -3,7 +3,7 @@ import { HomeIcon, TagIcon, BellIcon, InfoIcon, MapPinIcon, BriefcaseIcon, Truck
 export const MENU_ITEMS = [
   { icon: <HomeIcon />, label: "Bosh sahifa" },
   { icon: <TagIcon />, label: "Aksiyalar" },
-  { icon: <BellIcon />, label: "Xabarnoma" },
+  { icon: <BellIcon />, label: "Buyurtmalar" },
   { icon: <InfoIcon />, label: "Biz haqimizda" },
   { icon: <MapPinIcon />, label: "Filiallar" },
   { icon: <BriefcaseIcon />, label: "Ish o'rinlari" },

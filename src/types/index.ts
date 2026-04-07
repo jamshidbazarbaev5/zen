@@ -31,21 +31,23 @@ export interface Language {
 export type Screen = "home" | "cart" | "notifications";
 export type DeliveryMode = "delivery" | "pickup";
 
-export interface CreateOrderItem {
-  product_iiko_id: string;
+export interface OrderModifier {
+  modifier_id: number;
   quantity: number;
-  modifiers: string[];
+}
+
+export interface CreateOrderItem {
+  product_id: number;
+  quantity: number;
+  modifiers: OrderModifier[];
 }
 
 export interface CreateOrderRequest {
-  delivery_type: "delivery" | "pickup";
-  branch_id?: number;
-  address?: string;
-  lat?: number;
-  lon?: number;
-  scheduled_time: string;
-  items: CreateOrderItem[];
+  pickup_time: string;
+  total_amount: string;
   use_balance: boolean;
+  order_type: "delivery" | "pickup";
+  items: CreateOrderItem[];
 }
 
 export interface CreateOrderResponse {
