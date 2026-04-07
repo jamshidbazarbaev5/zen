@@ -1,36 +1,197 @@
-import type { Product } from '../types';
+import { useState, useEffect } from "react";
+import type { Product, ProductDetail, SelectedModifier, CartEntry } from '../types';
 import { styles } from '../styles';
-import { HeartIcon, CloseIcon } from './Icons';
+import { CloseIcon } from './Icons';
 import { formatPrice } from '../utils/formatPrice';
+import { getProductDetail } from '../api';
 
 interface Props {
   product: Product;
-  quantity: number;
   onClose: () => void;
-  onAdd: (id: number) => void;
-  onRemove: (id: number) => void;
+  onAddToCart: (entry: CartEntry) => void;
 }
 
-const ProductDetailModal = ({ product, quantity, onClose, onAdd, onRemove }: Props) => (
-  <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
-    <div style={styles.modal} className="modal-product" onClick={(e) => e.stopPropagation()}>
-      <div style={styles.modalImageWrap}>
-        <button style={styles.modalFav}><HeartIcon /></button>
-        <button style={styles.modalClose} onClick={onClose}><CloseIcon /></button>
-        <img src={product.image_url} alt={product.name} style={styles.modalImage} />
-      </div>
-      <div style={styles.modalBody}>
-        <h2 style={styles.modalTitle}>{product.name}</h2>
-        <p style={styles.modalDesc}>{product.description}</p>
-        <p style={styles.modalPrice}>{formatPrice(Number(product.price))} so'm</p>
-        <div style={styles.modalCounter}>
-          <button style={styles.counterBtnLg} onClick={() => onRemove(product.id)}>−</button>
-          <span style={styles.counterNumLg}>{quantity}</span>
-          <button style={styles.counterBtnLg} onClick={() => onAdd(product.id)}>+</button>
+const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
+  const [detail, setDetail] = useState<ProductDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  // selected[groupId] = modifier_id (for max_amount=1 groups, acts as radio)
+  // For multi-select we'd need an array, but API shows max_amount=1 for groups
+  const [selected, setSelected] = useState<Record<number, number | null>>({});
+
+  useEffect(() => {
+    getProductDetail(product.id)
+      .then((d) => {
+        setDetail(d);
+        // Pre-select required groups' first modifier with default or first free
+        const initial: Record<number, number | null> = {};
+        d.modifier_groups.forEach((g) => {
+          if (g.required && g.modifiers.length > 0) {
+            const def = g.modifiers.find((m) => m.default_amount > 0);
+            const free = g.modifiers.find((m) => Number(m.price) === 0);
+            initial[g.id] = def?.id ?? free?.id ?? g.modifiers[0].id;
+          }
+        });
+        setSelected(initial);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [product.id]);
+
+  const getModifierPrice = () => {
+    if (!detail) return 0;
+    let total = 0;
+    for (const group of detail.modifier_groups) {
+      const selId = selected[group.id];
+      if (selId) {
+        const mod = group.modifiers.find((m) => m.id === selId);
+        if (mod) total += Number(mod.price);
+      }
+    }
+    return total;
+  };
+
+  const unitPrice = Number(product.price) + getModifierPrice();
+  const totalPrice = unitPrice * quantity;
+
+  const toggleModifier = (groupId: number, modId: number, required: boolean) => {
+    setSelected((prev) => {
+      if (prev[groupId] === modId && !required) {
+        return { ...prev, [groupId]: null };
+      }
+      return { ...prev, [groupId]: modId };
+    });
+  };
+
+  const handleAdd = () => {
+    const mods: SelectedModifier[] = [];
+    Object.entries(selected).forEach(([, modId]) => {
+      if (modId) mods.push({ modifier_id: modId, quantity: 1 });
+    });
+    onAddToCart({
+      productId: product.id,
+      quantity,
+      modifiers: mods,
+      modifierTotal: getModifierPrice(),
+    });
+    onClose();
+  };
+
+  // Check if all required groups have a selection
+  const canAdd = detail ? detail.modifier_groups
+    .filter((g) => g.required)
+    .every((g) => selected[g.id] != null) : false;
+
+  return (
+    <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
+      <div style={styles.modal} className="modal-product" onClick={(e) => e.stopPropagation()}>
+        <div style={styles.modalImageWrap}>
+          <button style={styles.modalClose} onClick={onClose}><CloseIcon /></button>
+          <img src={product.image_url} alt={product.name} style={styles.modalImage} />
+        </div>
+        <div style={styles.modalBody}>
+          <h2 style={styles.modalTitle}>{product.name}</h2>
+          {product.description && <p style={styles.modalDesc}>{product.description}</p>}
+          <p style={styles.modalPrice}>{formatPrice(unitPrice)} so'm</p>
+
+          {loading ? (
+            <div style={{ padding: "20px 0", textAlign: "center", color: "var(--text-muted)" }}>
+              Yuklanmoqda...
+            </div>
+          ) : detail && detail.modifier_groups.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 20 }}>
+              {detail.modifier_groups.map((group) => (
+                <div key={group.id}>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
+                  }}>
+                    <span style={{
+                      fontSize: 14, fontWeight: 700, color: "var(--text-primary)",
+                    }}>
+                      {group.name}
+                    </span>
+                    {group.required && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4,
+                        background: "var(--accent)", color: "#fff", textTransform: "uppercase",
+                        letterSpacing: 0.5,
+                      }}>
+                        shart
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {group.modifiers.map((mod) => {
+                      const isSelected = selected[group.id] === mod.id;
+                      const price = Number(mod.price);
+                      return (
+                        <button
+                          key={mod.id}
+                          onClick={() => toggleModifier(group.id, mod.id, group.required)}
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "11px 14px", borderRadius: 12,
+                            border: isSelected ? "1.5px solid var(--accent)" : "1px solid var(--border-color)",
+                            background: isSelected ? "var(--accent-light, #f0f5f1)" : "var(--card-bg, var(--bg-primary))",
+                            cursor: "pointer", transition: "all 0.15s ease",
+                            textAlign: "left",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{
+                              width: 20, height: 20, borderRadius: "50%",
+                              border: isSelected ? "6px solid var(--accent)" : "2px solid var(--border-color)",
+                              background: isSelected ? "#fff" : "transparent",
+                              transition: "all 0.15s ease", flexShrink: 0,
+                            }} />
+                            <span style={{
+                              fontSize: 14, color: "var(--text-primary)",
+                              fontWeight: isSelected ? 600 : 400,
+                            }}>
+                              {mod.name}
+                            </span>
+                          </div>
+                          {price > 0 && (
+                            <span style={{
+                              fontSize: 13, fontWeight: 600, color: "var(--accent)",
+                              whiteSpace: "nowrap", marginLeft: 8,
+                            }}>
+                              +{formatPrice(price)}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {/* Quantity + Add button */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: detail?.modifier_groups.length ? 0 : 12 }}>
+            <div style={styles.modalCounter}>
+              <button style={styles.counterBtnLg} onClick={() => setQuantity((q) => Math.max(1, q - 1))}>-</button>
+              <span style={styles.counterNumLg}>{quantity}</span>
+              <button style={styles.counterBtnLg} onClick={() => setQuantity((q) => q + 1)}>+</button>
+            </div>
+            <button
+              disabled={!canAdd && detail != null && detail.modifier_groups.some((g) => g.required)}
+              onClick={handleAdd}
+              style={{
+                flex: 1, padding: "14px 0", borderRadius: 12, border: "none",
+                background: "var(--accent)", color: "#fff", fontSize: 16, fontWeight: 700,
+                cursor: "pointer", transition: "opacity 0.2s",
+                opacity: (!canAdd && detail != null && detail.modifier_groups.some((g) => g.required)) ? 0.5 : 1,
+              }}
+            >
+              {formatPrice(totalPrice)} so'm
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default ProductDetailModal;

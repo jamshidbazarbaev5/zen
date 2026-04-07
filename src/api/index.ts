@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile } from "../types";
+import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile, CashbackInfo, ProductDetail } from "../types";
 
 const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
@@ -37,6 +37,11 @@ export const authenticateTelegram = async (initData: string): Promise<TelegramAu
   return data;
 };
 
+export const getProductDetail = async (productId: number): Promise<ProductDetail> => {
+  const { data } = await api.get<ProductDetail>(`/menu/${productId}/`);
+  return data;
+};
+
 export const createOrder = async (payload: CreateOrderRequest): Promise<CreateOrderResponse> => {
   const { data } = await api.post<CreateOrderResponse>("/orders/create/", payload);
   return data;
@@ -49,6 +54,16 @@ export const getMyOrders = async (): Promise<OrderListItem[]> => {
 
 export const getMyProfile = async (): Promise<CustomerProfile> => {
   const { data } = await api.get<CustomerProfile>("/customers/me/");
+  return data;
+};
+
+export const updateMyProfile = async (data: { name?: string; lang?: string }): Promise<CustomerProfile> => {
+  const { data: result } = await api.patch<CustomerProfile>("/customers/me/", data);
+  return result;
+};
+
+export const getCashbackInfo = async (): Promise<CashbackInfo> => {
+  const { data } = await api.get<CashbackInfo>("/cashback/info/");
   return data;
 };
 

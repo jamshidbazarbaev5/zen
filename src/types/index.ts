@@ -1,3 +1,21 @@
+export interface Modifier {
+  id: number;
+  name: string;
+  price: string;
+  min_amount: number;
+  max_amount: number;
+  default_amount: number;
+}
+
+export interface ModifierGroup {
+  id: number;
+  name: string;
+  min_amount: number;
+  max_amount: number;
+  required: boolean;
+  modifiers: Modifier[];
+}
+
 export interface Product {
   id: number;
   iiko_id: string;
@@ -8,6 +26,25 @@ export interface Product {
   is_available: boolean;
   category: string;
 }
+
+export interface ProductDetail extends Product {
+  modifier_groups: ModifierGroup[];
+}
+
+export interface SelectedModifier {
+  modifier_id: number;
+  quantity: number;
+}
+
+export interface CartEntry {
+  productId: number;
+  quantity: number;
+  modifiers: SelectedModifier[];
+  modifierTotal: number; // extra price from modifiers per unit
+}
+
+// Cart key: "productId" or "productId_mod1-mod2" for items with modifiers
+export type Cart = Record<string, CartEntry>;
 
 export interface MenuCategory {
   id: number;
@@ -28,7 +65,24 @@ export interface Language {
   icon: string;
 }
 
-export type Screen = "home" | "cart" | "notifications" | "profile";
+export type Screen = "home" | "cart" | "notifications" | "profile" | "cashback";
+
+export interface CashbackTier {
+  name: string;
+  percent: string;
+  min_spent: string;
+}
+
+export interface CashbackNextTier extends CashbackTier {
+  remaining: string;
+}
+
+export interface CashbackInfo {
+  total_spent: string;
+  current_tier: CashbackTier;
+  next_tier: CashbackNextTier | null;
+  tiers: CashbackTier[];
+}
 
 export interface CustomerProfile {
   id: number;

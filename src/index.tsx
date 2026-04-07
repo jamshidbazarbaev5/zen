@@ -3,7 +3,7 @@ import { styles } from './styles';
 import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
 import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
-import type { Product, MenuCategory, Screen, DeliveryMode, Branch } from './types';
+import type { Product, MenuCategory, Screen, DeliveryMode, Branch, Cart, CartEntry } from './types';
 import { getMenu, authenticateTelegram, createOrder } from './api';
 import { isTelegram, getInitData, getPhotoUrl } from './telegram';
 import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
@@ -13,6 +13,7 @@ import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import CashbackScreen from './screens/CashbackScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import MenuSidebar from './components/MenuSidebar';
 import LanguageModal from './components/LanguageModal';
@@ -20,12 +21,19 @@ import OrderTypeModal from './components/OrderTypeModal';
 import BranchModal from './components/BranchModal';
 import LocationModal from './components/LocationModal';
 
+// Generate a cart key from product id + modifiers
+const cartKey = (productId: number, modifiers: { modifier_id: number; quantity: number }[]): string => {
+  if (modifiers.length === 0) return String(productId);
+  const sorted = [...modifiers].sort((a, b) => a.modifier_id - b.modifier_id);
+  return `${productId}_${sorted.map((m) => m.modifier_id).join("-")}`;
+};
+
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState("");
-  const [cart, setCart] = useState<Record<number, number>>({});
+  const [cart, setCart] = useState<Cart>({});
   const [, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,15 +120,73 @@ const Index = () => {
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const addToCart = (id: number) => setCart((c) => ({ ...c, [id]: (c[id] || 0) + 1 }));
-  const removeFromCart = (id: number) =>
+  // Quick add (no modifiers) from product grid
+  const addToCart = (id: number) => {
+    const key = String(id);
     setCart((c) => {
+      const existing = c[key];
+      if (existing) {
+        return { ...c, [key]: { ...existing, quantity: existing.quantity + 1 } };
+      }
+      return { ...c, [key]: { productId: id, quantity: 1, modifiers: [], modifierTotal: 0 } };
+    });
+  };
+
+  const removeFromCart = (id: number) => {
+    const key = String(id);
+    setCart((c) => {
+      const existing = c[key];
+      if (!existing) return c;
+      if (existing.quantity > 1) {
+        return { ...c, [key]: { ...existing, quantity: existing.quantity - 1 } };
+      }
       const n = { ...c };
-      if (n[id] > 1) n[id]--;
-      else delete n[id];
+      delete n[key];
       return n;
     });
+  };
+
+  // Add from product detail modal (with modifiers)
+  const addEntryToCart = (entry: CartEntry) => {
+    const key = cartKey(entry.productId, entry.modifiers);
+    setCart((c) => {
+      const existing = c[key];
+      if (existing) {
+        return { ...c, [key]: { ...existing, quantity: existing.quantity + entry.quantity } };
+      }
+      return { ...c, [key]: entry };
+    });
+  };
+
+  // Remove a specific cart entry by key
+  const removeCartEntry = (key: string) => {
+    setCart((c) => {
+      const existing = c[key];
+      if (!existing) return c;
+      if (existing.quantity > 1) {
+        return { ...c, [key]: { ...existing, quantity: existing.quantity - 1 } };
+      }
+      const n = { ...c };
+      delete n[key];
+      return n;
+    });
+  };
+
+  const addCartEntry = (key: string) => {
+    setCart((c) => {
+      const existing = c[key];
+      if (!existing) return c;
+      return { ...c, [key]: { ...existing, quantity: existing.quantity + 1 } };
+    });
+  };
+
   const clearCart = () => setCart({});
+
+  // Legacy cart format for HomeScreen (productId -> total qty)
+  const simpleCart: Record<number, number> = {};
+  Object.values(cart).forEach((entry) => {
+    simpleCart[entry.productId] = (simpleCart[entry.productId] || 0) + entry.quantity;
+  });
 
   const handleCheckout = () => setTimePickerOpen(true);
 
@@ -129,10 +195,13 @@ const Index = () => {
     setOrderError(null);
     try {
       const today = new Date().toISOString().slice(0, 10);
-      const items = Object.entries(cart).map(([id, qty]) => ({
-        product_id: Number(id),
-        quantity: qty,
-        modifiers: [] as { modifier_id: number; quantity: number }[],
+      const items = Object.values(cart).map((entry) => ({
+        product_id: entry.productId,
+        quantity: entry.quantity,
+        modifiers: entry.modifiers.map((m) => ({
+          modifier_id: m.modifier_id,
+          quantity: m.quantity,
+        })),
       }));
       const payload: CreateOrderRequest = {
         pickup_time: `${today}T${time}:00+05:00`,
@@ -169,15 +238,18 @@ const Index = () => {
     }
   };
 
-  const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const p = products.find((x) => x.id === Number(id));
-    return sum + (p ? Number(p.price) * qty : 0);
+  const totalPrice = Object.values(cart).reduce((sum, entry) => {
+    const p = products.find((x) => x.id === entry.productId);
+    if (!p) return sum;
+    return sum + (Number(p.price) + entry.modifierTotal) * entry.quantity;
   }, 0);
 
-  const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
-  const cartProducts = Object.entries(cart).map(([id, qty]) => ({
-    product: products.find((x) => x.id === Number(id))!,
-    qty,
+  const totalItems = Object.values(cart).reduce((a, e) => a + e.quantity, 0);
+
+  const cartProducts = Object.entries(cart).map(([key, entry]) => ({
+    key,
+    product: products.find((x) => x.id === entry.productId)!,
+    entry,
   }));
 
   return (
@@ -212,7 +284,6 @@ const Index = () => {
       <div className="desktop-layout">
         {/* Main content area */}
         <div className="desktop-main">
-          {/* HOME SCREEN */}
           {screen === "home" && (
             <HomeScreen
               activeCategory={activeCategory}
@@ -221,32 +292,39 @@ const Index = () => {
               setSearchQuery={setSearchQuery}
               filteredProducts={filteredProducts}
               categories={categories.map((c) => c.name)}
-              cart={cart}
+              cart={simpleCart}
               addToCart={addToCart}
               removeFromCart={removeFromCart}
               onProductSelect={setSelectedProduct}
             />
           )}
 
-          {/* NOTIFICATIONS SCREEN */}
           {screen === "notifications" && (
             <NotificationsScreen onBack={() => setScreen("home")} />
           )}
 
-          {/* PROFILE SCREEN */}
           {screen === "profile" && (
-            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} />
+            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} onCashback={() => setScreen("cashback")} />
           )}
 
-          {/* CART SCREEN (mobile only) */}
+          {screen === "cashback" && (
+            <CashbackScreen onBack={() => setScreen("profile")} />
+          )}
+
           {screen === "cart" && (
             <div className="mobile-cart-screen">
               <CartScreen
-                cartProducts={cartProducts}
+                cartProducts={cartProducts.map(({ key, product, entry }) => ({
+                  key,
+                  product,
+                  qty: entry.quantity,
+                  modifiers: entry.modifiers,
+                  modifierTotal: entry.modifierTotal,
+                }))}
                 onBack={() => setScreen("home")}
                 onClear={clearCart}
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
+                addToCart={addCartEntry}
+                removeFromCart={removeCartEntry}
               />
             </div>
           )}
@@ -275,17 +353,24 @@ const Index = () => {
           ) : (
             <>
               <div className="desktop-cart-items">
-                {cartProducts.map(({ product, qty }) => (
-                  <div key={product.id} className="desktop-cart-item">
+                {cartProducts.map(({ key, product, entry }) => (
+                  <div key={key} className="desktop-cart-item">
                     <img src={product.image_url} alt={product.name} />
                     <div className="desktop-cart-item-info">
                       <div className="desktop-cart-item-name">{product.name}</div>
-                      <div className="desktop-cart-item-price">{formatPrice(Number(product.price))} so'm</div>
+                      {entry.modifiers.length > 0 && (
+                        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                          +{formatPrice(entry.modifierTotal)}
+                        </div>
+                      )}
+                      <div className="desktop-cart-item-price">
+                        {formatPrice(Number(product.price) + entry.modifierTotal)} so'm
+                      </div>
                     </div>
                     <div className="desktop-cart-item-controls">
-                      <button onClick={() => removeFromCart(product.id)}>−</button>
-                      <span>{qty}</span>
-                      <button onClick={() => addToCart(product.id)}>+</button>
+                      <button onClick={() => removeCartEntry(key)}>-</button>
+                      <span>{entry.quantity}</span>
+                      <button onClick={() => addCartEntry(key)}>+</button>
                     </div>
                   </div>
                 ))}
@@ -338,10 +423,8 @@ const Index = () => {
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
-          quantity={cart[selectedProduct.id] || 0}
           onClose={() => setSelectedProduct(null)}
-          onAdd={addToCart}
-          onRemove={removeFromCart}
+          onAddToCart={addEntryToCart}
         />
       )}
 
