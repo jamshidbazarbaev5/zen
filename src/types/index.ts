@@ -91,6 +91,12 @@ export interface OrderListItem {
   pickup_location: string | null;
   pickup_location_name: string | null;
   delivery_address: string;
+  delivery_flat: string;
+  delivery_entrance: string;
+  delivery_floor: string;
+  delivery_comment: string;
+  delivery_latitude: number | null;
+  delivery_longitude: number | null;
   total_amount: string;
   balance_used: string;
   online_paid: string;
