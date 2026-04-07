@@ -140,6 +140,7 @@ const Index = () => {
           ? { branch_id: selectedBranch.id }
           : { address: deliveryAddress, lat: deliveryPosition[0], lon: deliveryPosition[1] }),
       };
+      console.log("ORDER PAYLOAD:", JSON.stringify(payload, null, 2));
       const result = await createOrder(payload);
       clearCart();
       setTimePickerOpen(false);
@@ -148,10 +149,11 @@ const Index = () => {
         window.open(result.payment_url, "_blank");
       }
     } catch (err: any) {
-      const msg = err?.response?.data
+      const respMsg = err?.response?.data
         ? JSON.stringify(err.response.data)
         : err?.message || String(err);
-      setOrderError(`${err?.response?.status || "?"}: ${msg}`);
+      console.error("ORDER ERROR:", err?.response?.status, respMsg);
+      setOrderError("Error " + (err?.response?.status || "?") + ": " + respMsg);
     } finally {
       setOrderLoading(false);
     }
