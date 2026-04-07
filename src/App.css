@@ -12,6 +12,7 @@
   --accent-light: #f0f5f1;
 }
 
+
 [data-theme="dark"] {
   --bg-primary: #1a1a2e;
   --bg-secondary: #2a2a3e;

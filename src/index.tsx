@@ -282,7 +282,7 @@ const Index = () => {
 
       {/* Desktop: flex layout with sidebar */}
       <div className="desktop-layout">
-        {/* Main content area */}
+        {/* Main content areaaaaaaaa */}
         <div className="desktop-main">
           {screen === "home" && (
             <HomeScreen
