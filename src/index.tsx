@@ -6,7 +6,7 @@ import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Branch } from './types';
 import { getMenu, authenticateTelegram, createOrder } from './api';
 import { isTelegram, getInitData, getPhotoUrl } from './telegram';
-import TimePickerModal from './components/TimePickerModal';
+import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
 import type { CreateOrderRequest } from './types';
 
 import HomeScreen from './screens/HomeScreen';
@@ -124,7 +124,7 @@ const Index = () => {
 
   const handleCheckout = () => setTimePickerOpen(true);
 
-  const handleOrderSubmit = async (time: string) => {
+  const handleOrderSubmit = async (time: string, delivery?: DeliveryDetails) => {
     setOrderLoading(true);
     setOrderError(null);
     try {
@@ -140,6 +140,15 @@ const Index = () => {
         use_balance: false,
         order_type: deliveryMode,
         items,
+        ...(deliveryMode === "delivery" ? {
+          delivery_address: deliveryAddress,
+          delivery_latitude: deliveryPosition[0],
+          delivery_longitude: deliveryPosition[1],
+          delivery_flat: delivery?.flat || "",
+          delivery_entrance: delivery?.entrance || "",
+          delivery_floor: delivery?.floor || "",
+          delivery_comment: delivery?.comment || "",
+        } : {}),
       };
       console.log("ORDER PAYLOAD:", JSON.stringify(payload, null, 2));
       const result = await createOrder(payload);
@@ -397,6 +406,7 @@ const Index = () => {
           onClose={() => { setTimePickerOpen(false); setOrderError(null); }}
           loading={orderLoading}
           error={orderError}
+          isDelivery={deliveryMode === "delivery"}
         />
       )}
 

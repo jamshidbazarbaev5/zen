@@ -57,7 +57,7 @@ const NotificationsScreen = ({ onBack }: Props) => {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <span style={{ fontWeight: 700, fontSize: 16, color: "var(--text-primary, #222)" }}>
-                  #{order.order_number}
+                  #{order.number}
                 </span>
                 <span style={{
                   fontSize: 12, padding: "4px 10px", borderRadius: 20, fontWeight: 600,
@@ -76,7 +76,7 @@ const NotificationsScreen = ({ onBack }: Props) => {
                 ))}
               </div>
               <div style={{ fontWeight: 700, fontSize: 15, color: "var(--text-primary, #222)" }}>
-                {formatPrice(Number(order.total))} so'm
+                {formatPrice(Number(order.total_amount))} so'm
               </div>
             </div>
           ))}

@@ -59,6 +59,13 @@ export interface CreateOrderRequest {
   use_balance: boolean;
   order_type: "delivery" | "pickup";
   items: CreateOrderItem[];
+  delivery_address?: string;
+  delivery_flat?: string;
+  delivery_entrance?: string;
+  delivery_floor?: string;
+  delivery_comment?: string;
+  delivery_latitude?: number;
+  delivery_longitude?: number;
 }
 
 export interface CreateOrderResponse {
@@ -68,16 +75,27 @@ export interface CreateOrderResponse {
 }
 
 export interface OrderItemResponse {
+  id: number;
   product_name: string;
   quantity: number;
   price: string;
+  subtotal: number;
+  modifiers: unknown[];
 }
 
 export interface OrderListItem {
   id: number;
-  order_number: string;
+  number: string;
   status: string;
-  total: string;
-  created_at: string;
+  order_type: "pickup" | "delivery";
+  pickup_location: string | null;
+  pickup_location_name: string | null;
+  delivery_address: string;
+  total_amount: string;
+  balance_used: string;
+  online_paid: string;
+  pickup_time: string;
   items: OrderItemResponse[];
+  payment_url: string;
+  created_at: string;
 }
