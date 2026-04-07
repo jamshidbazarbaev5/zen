@@ -12,11 +12,18 @@ export const getMenu = async (lang: string): Promise<MenuCategory[]> => {
   return data;
 };
 
-export const authenticateTelegram = async (initData: string): Promise<void> => {
+export const authenticateTelegram = async (initData: string): Promise<string> => {
   const { data } = await api.post<{ token: string }>("/auth/telegram/", {
     init_data: initData,
   });
-  api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+  const token = data.token;
+  console.log("Telegram auth token:", token);
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+  const profile = await api.get("/customers/me/");
+  console.log("Profile data:", profile.data);
+
+  return token;
 };
 
 export default api;

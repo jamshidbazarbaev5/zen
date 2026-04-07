@@ -38,6 +38,7 @@ const Index = () => {
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
@@ -47,7 +48,9 @@ const Index = () => {
 
   useEffect(() => {
     if (isTelegram()) {
-      authenticateTelegram(getInitData()).catch(console.error);
+      authenticateTelegram(getInitData())
+        .then((token) => setDebugInfo("Token: " + token))
+        .catch((err) => setDebugInfo("Auth error: " + String(err)));
       setPhotoUrl(getPhotoUrl());
     }
   }, []);
@@ -129,6 +132,12 @@ const Index = () => {
 
   return (
     <div style={styles.container} className="app-container">
+      {/* Debug banner — remove later */}
+      {debugInfo && (
+        <div style={{ background: "#222", color: "#0f0", padding: 8, fontSize: 11, wordBreak: "break-all", fontFamily: "monospace" }}>
+          {debugInfo}
+        </div>
+      )}
       {/* Profile & Delivery */}
       <div style={styles.profileRow} className="profile-row">
         <div style={styles.avatar}>
