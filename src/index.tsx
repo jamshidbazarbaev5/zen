@@ -12,6 +12,7 @@ import type { CreateOrderRequest } from './types';
 import HomeScreen from './screens/HomeScreen';
 import CartScreen from './screens/CartScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import ProfileScreen from './screens/ProfileScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import MenuSidebar from './components/MenuSidebar';
 import LanguageModal from './components/LanguageModal';
@@ -174,7 +175,7 @@ const Index = () => {
     <div style={styles.container} className="app-container">
       {/* Profile & Delivery */}
       <div style={styles.profileRow} className="profile-row">
-        <div style={styles.avatar}>
+        <div style={{ ...styles.avatar, cursor: "pointer" }} onClick={() => setScreen("profile")}>
           {photoUrl ? (
             <img src={photoUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
           ) : (
@@ -221,6 +222,11 @@ const Index = () => {
           {/* NOTIFICATIONS SCREEN */}
           {screen === "notifications" && (
             <NotificationsScreen onBack={() => setScreen("home")} />
+          )}
+
+          {/* PROFILE SCREEN */}
+          {screen === "profile" && (
+            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} />
           )}
 
           {/* CART SCREEN (mobile only) */}

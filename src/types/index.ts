@@ -28,7 +28,18 @@ export interface Language {
   icon: string;
 }
 
-export type Screen = "home" | "cart" | "notifications";
+export type Screen = "home" | "cart" | "notifications" | "profile";
+
+export interface CustomerProfile {
+  id: number;
+  telegram_id: number;
+  name: string;
+  phone: string;
+  lang: string;
+  balance: string;
+  total_spent: string;
+  is_active: boolean;
+}
 export type DeliveryMode = "delivery" | "pickup";
 
 export interface OrderModifier {

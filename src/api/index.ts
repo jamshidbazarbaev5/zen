@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem } from "../types";
+import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile } from "../types";
 
 const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
@@ -44,6 +44,11 @@ export const createOrder = async (payload: CreateOrderRequest): Promise<CreateOr
 
 export const getMyOrders = async (): Promise<OrderListItem[]> => {
   const { data } = await api.get<OrderListItem[]>("/orders/my/");
+  return data;
+};
+
+export const getMyProfile = async (): Promise<CustomerProfile> => {
+  const { data } = await api.get<CustomerProfile>("/customers/me/");
   return data;
 };
 
