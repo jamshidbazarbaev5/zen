@@ -1,22 +1,15 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
 import { getMyOrders } from '../api';
 import { formatPrice } from '../utils/formatPrice';
 import type { OrderListItem } from '../types';
+// import { ChevronDown } from "lucide-react";
 
 interface Props {
   onBack: () => void;
 }
-
-const statusConfig: Record<string, { label: string; bg: string; color: string; darkBg: string; darkColor: string }> = {
-  pending:    { label: "Kutilmoqda",     bg: "#fff3e0", color: "#e65100", darkBg: "#3d2e1a", darkColor: "#ffb74d" },
-  confirmed:  { label: "Tasdiqlandi",    bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
-  preparing:  { label: "Tayyorlanmoqda", bg: "#e3f2fd", color: "#1565c0", darkBg: "#1a2535", darkColor: "#64b5f6" },
-  ready:      { label: "Tayyor",         bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
-  delivered:  { label: "Yetkazildi",     bg: "#f1f8e9", color: "#558b2f", darkBg: "#1f2e1a", darkColor: "#aed581" },
-  cancelled:  { label: "Bekor qilindi",  bg: "#fce4ec", color: "#c62828", darkBg: "#351a1f", darkColor: "#ef9a9a" },
-};
 
 const ChevronDown = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -66,6 +59,7 @@ const ExpandableSection = ({ expanded, children }: { expanded: boolean; children
 };
 
 const NotificationsScreen = ({ onBack }: Props) => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -79,12 +73,21 @@ const NotificationsScreen = ({ onBack }: Props) => {
 
   const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
 
+  const statusConfig: Record<string, { label: string; bg: string; color: string; darkBg: string; darkColor: string }> = {
+    pending:    { label: t('pending'),    bg: "#fff3e0", color: "#e65100", darkBg: "#3d2e1a", darkColor: "#ffb74d" },
+    confirmed:  { label: t('confirmed'),  bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
+    preparing:  { label: t('preparing'),  bg: "#e3f2fd", color: "#1565c0", darkBg: "#1a2535", darkColor: "#64b5f6" },
+    ready:      { label: t('ready'),      bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
+    delivered:  { label: t('delivered'),  bg: "#f1f8e9", color: "#558b2f", darkBg: "#1f2e1a", darkColor: "#aed581" },
+    cancelled:  { label: t('cancelled'),  bg: "#fce4ec", color: "#c62828", darkBg: "#351a1f", darkColor: "#ef9a9a" },
+  };
+
   return (
     <div style={{ padding: "0 16px", minHeight: "80vh" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0 20px" }}>
         <button style={styles.backBtn} onClick={onBack}><ArrowLeftIcon /></button>
         <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "var(--text-primary)", letterSpacing: -0.5 }}>
-          Buyurtmalar
+          {t('orders')}
         </h2>
       </div>
 
@@ -112,8 +115,8 @@ const NotificationsScreen = ({ onBack }: Props) => {
               <rect x="9" y="3" width="6" height="4" rx="2" />
             </svg>
           </div>
-          <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px", color: "var(--text-secondary)" }}>Buyurtmalar yo'q</p>
-          <p style={{ fontSize: 14, margin: 0 }}>Birinchi buyurtmangizni bering</p>
+          <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px", color: "var(--text-secondary)" }}>{t('noOrdersYet')}</p>
+          <p style={{ fontSize: 14, margin: 0 }}>{t('placeFirstOrder')}</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingBottom: 100 }}>
@@ -178,7 +181,7 @@ const NotificationsScreen = ({ onBack }: Props) => {
                       </span>
                     </div>
                     <span style={{ fontWeight: 700, fontSize: 15, color: "var(--text-primary)" }}>
-                      {formatPrice(Number(order.total_amount))} <span style={{ fontWeight: 400, fontSize: 12, color: "var(--text-muted)" }}>so'm</span>
+                      {formatPrice(Number(order.total_amount))} <span style={{ fontWeight: 400, fontSize: 12, color: "var(--text-muted)" }}>{t('som')}</span>
                     </span>
                   </div>
                 </div>
@@ -198,32 +201,32 @@ const NotificationsScreen = ({ onBack }: Props) => {
                       color: "var(--text-secondary)",
                     }}>
                       {order.order_type === "delivery" ? <TruckIcon /> : <StoreIcon />}
-                      {order.order_type === "delivery" ? "Yetkazib berish" : "Olib ketish"}
+                      {order.order_type === "delivery" ? t('delivery') : t('pickup')}
                     </div>
 
                     {/* Details grid */}
                     <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 0 }}>
-                      <DetailRow label="Vaqt" value={new Date(order.pickup_time).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" })} />
+                      <DetailRow label={t('time')} value={new Date(order.pickup_time).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" })} />
 
                       {order.order_type === "delivery" && (
                         <>
-                          {order.delivery_address && <DetailRow label="Manzil" value={order.delivery_address} />}
+                          {order.delivery_address && <DetailRow label={t('address')} value={order.delivery_address} />}
                           {(order.delivery_flat || order.delivery_entrance || order.delivery_floor) && (
                             <DetailRow
-                              label="Tafsilotlar"
+                              label={t('details')}
                               value={[
-                                order.delivery_flat && `${order.delivery_flat}-xonadon`,
-                                order.delivery_entrance && `${order.delivery_entrance}-kirish`,
-                                order.delivery_floor && `${order.delivery_floor}-qavat`,
+                                order.delivery_flat && `${order.delivery_flat}-${t('flat')}`,
+                                order.delivery_entrance && `${order.delivery_entrance}-${t('entrance')}`,
+                                order.delivery_floor && `${order.delivery_floor}-${t('floor')}`,
                               ].filter(Boolean).join(", ")}
                             />
                           )}
-                          {order.delivery_comment && <DetailRow label="Izoh" value={order.delivery_comment} />}
+                          {order.delivery_comment && <DetailRow label={t('comment')} value={order.delivery_comment} />}
                         </>
                       )}
 
                       {order.order_type === "pickup" && order.pickup_location_name && (
-                        <DetailRow label="Filial" value={order.pickup_location_name} />
+                        <DetailRow label={t('branch')} value={order.pickup_location_name} />
                       )}
                     </div>
 
@@ -235,7 +238,7 @@ const NotificationsScreen = ({ onBack }: Props) => {
                         fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
                         textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8,
                       }}>
-                        Mahsulotlar
+                        {t('products')}
                       </div>
                       {order.items.map((item, i) => (
                         <div key={item.id} style={{
@@ -266,15 +269,15 @@ const NotificationsScreen = ({ onBack }: Props) => {
                     {/* Payment summary */}
                     <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 0 }}>
                       {Number(order.balance_used) > 0 && (
-                        <DetailRow label="Balansdan" value={`${formatPrice(Number(order.balance_used))} so'm`} />
+                        <DetailRow label={t('paidFromBalance')} value={`${formatPrice(Number(order.balance_used))} ${t('som')}`} />
                       )}
                       <div style={{
                         display: "flex", justifyContent: "space-between", alignItems: "center",
                         padding: "8px 0",
                       }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>Jami to'lov</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>{t('totalPayment')}</span>
                         <span style={{ fontSize: 16, fontWeight: 700, color: "var(--accent)" }}>
-                          {formatPrice(Number(order.online_paid))} so'm
+                          {formatPrice(Number(order.online_paid))} {t('som')}
                         </span>
                       </div>
                     </div>
@@ -294,7 +297,7 @@ const NotificationsScreen = ({ onBack }: Props) => {
                           transition: "opacity 0.2s ease",
                         }}
                       >
-                        To'lov qilish
+                        {t('makePayment')}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
                         </svg>

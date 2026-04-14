@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
 import { getCashbackInfo } from '../api';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const CashbackScreen = ({ onBack }: Props) => {
+  const { t } = useTranslation();
   const [info, setInfo] = useState<CashbackInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,7 @@ const CashbackScreen = ({ onBack }: Props) => {
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0 20px" }}>
         <button style={styles.backBtn} onClick={onBack}><ArrowLeftIcon /></button>
         <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "var(--text-primary)", letterSpacing: -0.5 }}>
-          Keshbek
+          {t('cashback')}
         </h2>
       </div>
 
@@ -64,7 +66,7 @@ const CashbackScreen = ({ onBack }: Props) => {
             }} />
 
             <div style={{ fontSize: 13, opacity: 0.8, fontWeight: 500, marginBottom: 4 }}>
-              Joriy daraja
+              {t('currentTier')}
             </div>
             <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 4, letterSpacing: -0.5 }}>
               {info.current_tier.name}
@@ -74,7 +76,7 @@ const CashbackScreen = ({ onBack }: Props) => {
             </div>
 
             <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 6 }}>
-              Umumiy xarid: {formatPrice(Number(info.total_spent))} so'm
+              {t('totalSpent')}: {formatPrice(Number(info.total_spent))} {t('som')}
             </div>
 
             {info.next_tier && (
@@ -90,7 +92,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                   }} />
                 </div>
                 <div style={{ fontSize: 12, opacity: 0.7 }}>
-                  {info.next_tier.name} darajagacha {formatPrice(Number(info.next_tier.remaining))} so'm qoldi
+                  {info.next_tier.name} {t('remaining')} {formatPrice(Number(info.next_tier.remaining))} {t('som')}
                 </div>
               </>
             )}
@@ -105,7 +107,7 @@ const CashbackScreen = ({ onBack }: Props) => {
             }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>
-                  Keyingi daraja
+                  {t('nextTier')}
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>
                   {info.next_tier.name}
@@ -125,7 +127,7 @@ const CashbackScreen = ({ onBack }: Props) => {
               fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
               textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12, paddingLeft: 2,
             }}>
-              Barcha darajalar
+              {t('allTiers')}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {info.tiers.map((tier, i) => {
@@ -158,7 +160,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                           fontSize: 12,
                           color: isCurrent ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
                         }}>
-                          {Number(tier.min_spent) === 0 ? "Boshlang'ich" : `${formatPrice(Number(tier.min_spent))} so'm dan`}
+                          {Number(tier.min_spent) === 0 ? t('initial') : `${formatPrice(Number(tier.min_spent))} ${t('som')} ${t('from')}`}
                         </div>
                       </div>
                     </div>
@@ -167,7 +169,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                         fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 6,
                         background: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: 0.5,
                       }}>
-                        Hozirgi
+                        {t('current')}
                       </div>
                     )}
                   </div>

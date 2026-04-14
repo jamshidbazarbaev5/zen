@@ -36,7 +36,7 @@ const OrderTypeModal = ({ deliveryMode, deliveryEnabled, deliveryFee, onSelectDe
             <div style={{ flex: 1, textAlign: "left" }}>
               <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>{t('delivery')}</div>
               <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>
-                {Number(deliveryFee) > 0 ? `${t('deliveryFee')}: ${formatPrice(Number(deliveryFee))} so'm` : t('delivery')}
+                {Number(deliveryFee) > 0 ? `${t('deliveryFee')}: ${formatPrice(Number(deliveryFee))} ${t('som')}` : t('delivery')}
               </div>
             </div>
             {deliveryMode === "delivery" && (

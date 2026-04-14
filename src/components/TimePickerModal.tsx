@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 export interface DeliveryDetails {
   flat: string;
@@ -22,6 +23,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 const TimePickerModal = ({ onConfirm, onClose, loading, error, isDelivery }: Props) => {
+  const { t } = useTranslation();
   const now = new Date();
   now.setMinutes(now.getMinutes() + 30);
   const defaultTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -51,10 +53,10 @@ const TimePickerModal = ({ onConfirm, onClose, loading, error, isDelivery }: Pro
         onClick={(e) => e.stopPropagation()}
       >
         <h3 style={{ margin: "0 0 16px", fontSize: 18, color: "var(--text-primary, #222)", textAlign: "center" }}>
-          {isDelivery ? "Yetkazib berish" : "Olib ketish vaqti"}
+          {isDelivery ? t('deliveryTime') : t('pickupTimeLabel')}
         </h3>
 
-        <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>Vaqt</label>
+        <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>{t('time')}</label>
         <input
           type="time"
           value={time}
@@ -66,21 +68,21 @@ const TimePickerModal = ({ onConfirm, onClose, loading, error, isDelivery }: Pro
           <>
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>Xonadon</label>
+                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>{t('flat')}</label>
                 <input placeholder="42" value={flat} onChange={(e) => setFlat(e.target.value)} style={inputStyle} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>Kirish</label>
+                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>{t('entrance')}</label>
                 <input placeholder="2" value={entrance} onChange={(e) => setEntrance(e.target.value)} style={inputStyle} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>Qavat</label>
+                <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>{t('floor')}</label>
                 <input placeholder="3" value={floor} onChange={(e) => setFloor(e.target.value)} style={inputStyle} />
               </div>
             </div>
-            <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>Izoh</label>
+            <label style={{ fontSize: 13, color: "var(--text-secondary, #666)", marginBottom: 4, display: "block" }}>{t('comment')}</label>
             <textarea
-              placeholder="Domofon kodi: 1234"
+              placeholder={`${t('intercomCode')}: 1234`}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={2}
@@ -98,7 +100,7 @@ const TimePickerModal = ({ onConfirm, onClose, loading, error, isDelivery }: Pro
             fontSize: 16, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
           }}
         >
-          {loading ? "Yuborilmoqda..." : "Tasdiqlash"}
+          {loading ? t('sending') : t('confirm')}
         </button>
         {error && (
           <div style={{

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import type L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const LocationModal = ({ position, address, onPositionChange, onAddressChange, onClose }: Props) => {
+  const { t } = useTranslation();
   const mapRef = useRef<L.Map | null>(null);
   const [locatingUser, setLocatingUser] = useState(false);
 
@@ -46,7 +48,7 @@ const LocationModal = ({ position, address, onPositionChange, onAddressChange, o
     <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
       <div style={styles.locationModal} className="location-modal-content" onClick={(e) => e.stopPropagation()}>
         <div style={styles.branchHeader}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Manzilni tanlang</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{t('selectAddress')}</h2>
           <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
         </div>
         <div style={{ height: 400, width: "100%", position: "relative" }}>
@@ -84,7 +86,7 @@ const LocationModal = ({ position, address, onPositionChange, onAddressChange, o
             style={{ ...styles.cartButton, justifyContent: "center" }}
             onClick={onClose}
           >
-            Tasdiqlash
+            {t('confirm')}
           </button>
         </div>
       </div>

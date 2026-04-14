@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon, UserIcon } from '../components/Icons';
 import { getMyProfile, updateMyProfile } from '../api';
@@ -26,6 +27,7 @@ const ChevronRight = () => (
 );
 
 const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) => {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
     <div style={{ padding: "0 16px", minHeight: "80vh" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0 20px" }}>
         <button style={styles.backBtn} onClick={onBack}><ArrowLeftIcon /></button>
-        <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "var(--text-primary)", letterSpacing: -0.5 }}>Profil</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "var(--text-primary)", letterSpacing: -0.5 }}>{t('profile')}</h2>
       </div>
 
       {loading ? (
@@ -137,11 +139,11 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
 
           {/* Info rows */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <InfoRow label="Telefon" value={profile.phone || "Ko'rsatilmagan"} />
-            <InfoRow label="Balans" value={`${formatPrice(Number(profile.balance))} so'm`} accent />
-            <InfoRow label="Umumiy xarid" value={`${formatPrice(Number(profile.total_spent))} so'm`} />
+            <InfoRow label={t('phone')} value={profile.phone || t('notSpecified')} />
+            <InfoRow label={t('balance')} value={`${formatPrice(Number(profile.balance))} ${t('som')}`} accent />
+            <InfoRow label={t('totalSpent')} value={`${formatPrice(Number(profile.total_spent))} ${t('som')}`} />
             <InfoRow
-              label="Til"
+              label={t('language')}
               value={profile.lang === "uz" ? "O'zbek" : profile.lang === "ru" ? "Русский" : profile.lang === "en" ? "English" : profile.lang}
             />
           </div>
@@ -160,7 +162,7 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
               </svg>
-              <span style={{ fontSize: 16, fontWeight: 600 }}>Keshbek dasturi</span>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>{t('cashbackProgram')}</span>
             </div>
             <ChevronRight />
           </button>
@@ -177,7 +179,7 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
                     border: "1px solid var(--border-color)", textDecoration: "none",
                   }}
                 >
-                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>Telefon</span>
+                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>{t('phone')}</span>
                   <span style={{ fontSize: 15, fontWeight: 600, color: "var(--accent)" }}>{businessInfo.phone}</span>
                 </a>
               )}
@@ -192,7 +194,7 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
                     border: "1px solid var(--border-color)", textDecoration: "none",
                   }}
                 >
-                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>Instagram</span>
+                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>{t('instagram')}</span>
                   <span style={{ fontSize: 15, fontWeight: 600, color: "var(--accent)" }}>@{businessInfo.instagram_url.split('/').pop()}</span>
                 </a>
               )}
