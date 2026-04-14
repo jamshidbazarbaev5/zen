@@ -2,6 +2,7 @@ import { styles } from '../styles';
 import { SearchIcon } from '../components/Icons';
 import type { Product } from '../types';
 import { formatPrice } from '../utils/formatPrice';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   activeCategory: string;
@@ -27,13 +28,16 @@ const HomeScreen = ({
   addToCart,
   removeFromCart,
   onProductSelect,
-}: Props) => (
+}: Props) => {
+  const { t } = useTranslation();
+  
+  return (
   <>
     <div style={styles.searchBox} className="search-box">
       <SearchIcon />
       <input
         style={styles.searchInput}
-        placeholder="Qidirish"
+        placeholder={t('search')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -76,5 +80,6 @@ const HomeScreen = ({
     </div>
   </>
 );
+};
 
 export default HomeScreen;

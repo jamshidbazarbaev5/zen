@@ -2,6 +2,8 @@ import { Check } from 'lucide-react';
 import { styles } from '../styles';
 import { CloseIcon, GlobeIcon } from './Icons';
 import { LANGUAGES } from '../data/constants';
+import { useTranslation } from 'react-i18next';
+import { useUser } from '../context/UserContext';
 
 interface Props {
   selectedLanguage: string;
@@ -9,11 +11,26 @@ interface Props {
   onClose: () => void;
 }
 
-const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => (
+const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => {
+  const { t } = useTranslation();
+  const { updateLanguage } = useUser();
+
+  const handleSelect = async (code: string) => {
+    try {
+      await updateLanguage(code);
+      onSelect(code);
+    } catch (error) {
+      console.error('Failed to update language:', error);
+      // Still update locally even if API fails
+      onSelect(code);
+    }
+  };
+
+  return (
   <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
     <div style={styles.languageModal} className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div style={styles.languageHeader}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Tilni tanlang</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{t('selectLanguage')}</h2>
         <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
       </div>
       <div style={styles.languageList}>
@@ -21,7 +38,7 @@ const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => (
           <button
             key={lang.code}
             style={selectedLanguage === lang.code ? styles.languageItemActive : styles.languageItem}
-            onClick={() => onSelect(lang.code)}
+            onClick={() => handleSelect(lang.code)}
           >
             <div style={styles.languageIconCircle}>
               <GlobeIcon />
@@ -38,5 +55,6 @@ const LanguageModal = ({ selectedLanguage, onSelect, onClose }: Props) => (
     </div>
   </div>
 );
+};
 
 export default LanguageModal;

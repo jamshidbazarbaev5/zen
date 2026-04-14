@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile, CashbackInfo, ProductDetail } from "../types";
+import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile, CashbackInfo, ProductDetail, BusinessInfo } from "../types";
 
 const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
@@ -9,6 +9,11 @@ export const getMenu = async (lang: string): Promise<MenuCategory[]> => {
   const { data } = await api.get<MenuCategory[]>("/menu/", {
     params: { lang },
   });
+  return data;
+};
+
+export const getBusinessInfo = async (): Promise<BusinessInfo> => {
+  const { data } = await api.get<BusinessInfo>("/orders/business-info/");
   return data;
 };
 

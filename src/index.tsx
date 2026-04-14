@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
+import { useUser } from './context/UserContext';
 import { styles } from './styles';
 import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
-import { BRANCHES } from './data/constants';
 import { formatPrice } from './utils/formatPrice';
-import type { Product, MenuCategory, Screen, DeliveryMode, Branch, Cart, CartEntry } from './types';
-import { getMenu, authenticateTelegram, createOrder } from './api';
+import type { Product, MenuCategory, Screen, DeliveryMode, Cart, CartEntry, PickupLocation, BusinessInfo } from './types';
+import { getMenu, authenticateTelegram, createOrder, getBusinessInfo } from './api';
 import { isTelegram, getInitData, getPhotoUrl } from './telegram';
 import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
 import type { CreateOrderRequest } from './types';
@@ -29,6 +30,8 @@ const cartKey = (productId: number, modifiers: { modifier_id: number; quantity: 
 };
 
 const Index = () => {
+  const { t, i18n } = useTranslation();
+  const { user } = useUser();
   const [screen, setScreen] = useState<Screen>("home");
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,10 +43,10 @@ const Index = () => {
   const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>("pickup");
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageModalOpen, setLanguageModalOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("uz");
+  const [selectedLanguage, setSelectedLanguage] = useState(user?.lang || i18n.language || "uz");
   const [orderTypeModalOpen, setOrderTypeModalOpen] = useState(false);
   const [branchModalOpen, setBranchModalOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState<Branch>(BRANCHES[0]);
+  const [selectedBranch, setSelectedBranch] = useState<PickupLocation | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
@@ -52,6 +55,7 @@ const Index = () => {
   const [deliveryPosition, setDeliveryPosition] = useState<[number, number]>([42.4619, 59.6166]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [businessInfo, setBusinessInfo] = useState<BusinessInfo | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
@@ -60,10 +64,30 @@ const Index = () => {
   });
 
   useEffect(() => {
+    if (user?.lang && selectedLanguage !== user.lang) {
+      setSelectedLanguage(user.lang);
+      i18n.changeLanguage(user.lang);
+    }
+  }, [user, i18n]);
+
+  useEffect(() => {
     if (isTelegram()) {
       authenticateTelegram(getInitData()).catch(console.error);
       setPhotoUrl(getPhotoUrl());
     }
+    // Fetch business info
+    getBusinessInfo()
+      .then((info) => {
+        setBusinessInfo(info);
+        if (info.pickup_locations.length > 0) {
+          setSelectedBranch(info.pickup_locations[0]);
+        }
+        // If delivery is disabled, force pickup mode
+        if (!info.delivery_enabled) {
+          setDeliveryMode("pickup");
+        }
+      })
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -209,6 +233,9 @@ const Index = () => {
         use_balance: false,
         order_type: deliveryMode,
         items,
+        ...(deliveryMode === "pickup" && selectedBranch ? {
+          pickup_location_id: selectedBranch.id,
+        } : {}),
         ...(deliveryMode === "delivery" ? {
           delivery_address: deliveryAddress,
           delivery_latitude: deliveryPosition[0],
@@ -268,14 +295,14 @@ const Index = () => {
             onClick={() => setOrderTypeModalOpen(true)}
             style={deliveryMode === "pickup" ? styles.deliveryActive : styles.deliveryBtn}
           >
-            {deliveryMode === "pickup" ? "Olib ketish" : "Yetkazib berish"} <ChevronDownIcon />
+            {deliveryMode === "pickup" ? t('pickup') : t('delivery')} <ChevronDownIcon />
           </button>
         </div>
         <div
           style={{ textAlign: "center", fontSize: 12, color: "var(--text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer", textDecoration: "underline" }}
           onClick={() => deliveryMode === "delivery" ? setLocationModalOpen(true) : setBranchModalOpen(true)}
         >
-          {deliveryMode === "delivery" && deliveryAddress ? deliveryAddress : selectedBranch.name}
+          {deliveryMode === "delivery" && deliveryAddress ? deliveryAddress : selectedBranch?.name || t('selectBranch')}
         </div>
         <button style={styles.menuBtn} onClick={() => setMenuOpen(true)}><MenuIcon /></button>
       </div>
@@ -304,7 +331,7 @@ const Index = () => {
           )}
 
           {screen === "profile" && (
-            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} onCashback={() => setScreen("cashback")} />
+            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} onCashback={() => setScreen("cashback")} businessInfo={businessInfo} />
           )}
 
           {screen === "cashback" && (
@@ -334,11 +361,11 @@ const Index = () => {
         <div className="desktop-sidebar">
           <div className="desktop-sidebar-header">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2>Savat {totalItems > 0 && <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>({totalItems})</span>}</h2>
+              <h2>{t('cart')} {totalItems > 0 && <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>({totalItems})</span>}</h2>
               {totalItems > 0 && (
                 <button className="desktop-clear-btn" onClick={clearCart}>
                   <TrashIcon />
-                  Tozalash
+                  {t('clear')}
                 </button>
               )}
             </div>
@@ -347,8 +374,8 @@ const Index = () => {
           {totalItems === 0 ? (
             <div className="desktop-sidebar-empty">
               <ShoppingBagIcon />
-              <p>Savatingiz hali bo'sh</p>
-              <p style={{ fontSize: 13, color: "#ccc" }}>Mahsulotlarni qo'shing</p>
+              <p>{t('cartEmpty')}</p>
+              <p style={{ fontSize: 13, color: "#ccc" }}>{t('addProducts')}</p>
             </div>
           ) : (
             <>
@@ -378,11 +405,11 @@ const Index = () => {
 
               <div className="desktop-cart-footer">
                 <div className="desktop-cart-summary">
-                  <span className="desktop-cart-summary-label">Jami:</span>
+                  <span className="desktop-cart-summary-label">{t('total')}</span>
                   <span className="desktop-cart-summary-total">{formatPrice(totalPrice)} so'm</span>
                 </div>
                 <button className="desktop-checkout-btn" onClick={handleCheckout}>
-                  Buyurtmani rasmiylashtirish
+                  {t('checkout')}
                 </button>
               </div>
             </>
@@ -399,20 +426,20 @@ const Index = () => {
       {totalItems > 0 && (
         <div style={styles.cartBar} className="mobile-cart-bar">
           <div style={styles.cartInfo}>
-            <span>Buyurtma qiymati:</span>
+            <span>{t('orderValue')}</span>
             <span style={{ fontWeight: 700 }}>{formatPrice(totalPrice)}</span>
           </div>
           {screen === "home" ? (
             <button style={styles.cartButton} onClick={() => setScreen("cart")}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <ShoppingBagIcon />
-                <span>Savat</span>
+                <span>{t('cart')}</span>
               </div>
               <span>{formatPrice(totalPrice)}</span>
             </button>
           ) : (
             <button style={styles.cartButton} onClick={handleCheckout}>
-              <span>Buyurtmani rasmiylashtirish</span>
+              <span>{t('checkout')}</span>
               <span>{formatPrice(totalPrice)}</span>
             </button>
           )}
@@ -448,9 +475,11 @@ const Index = () => {
         />
       )}
 
-      {orderTypeModalOpen && (
+      {orderTypeModalOpen && businessInfo && (
         <OrderTypeModal
           deliveryMode={deliveryMode}
+          deliveryEnabled={businessInfo.delivery_enabled}
+          deliveryFee={businessInfo.delivery_fee}
           onSelectDelivery={() => {
             setDeliveryMode("delivery");
             setOrderTypeModalOpen(false);
@@ -465,9 +494,10 @@ const Index = () => {
         />
       )}
 
-      {branchModalOpen && (
+      {branchModalOpen && businessInfo && selectedBranch && (
         <BranchModal
           selectedBranch={selectedBranch}
+          branches={businessInfo.pickup_locations}
           onSelect={(branch) => { setSelectedBranch(branch); setBranchModalOpen(false); }}
           onClose={() => setBranchModalOpen(false)}
         />

@@ -1,24 +1,28 @@
 import { Check } from 'lucide-react';
 import { styles } from '../styles';
 import { CloseIcon, MapPinIcon } from './Icons';
-import { BRANCHES } from '../data/constants';
-import type { Branch } from '../types';
+import type { PickupLocation } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
-  selectedBranch: Branch;
-  onSelect: (branch: Branch) => void;
+  selectedBranch: PickupLocation;
+  branches: PickupLocation[];
+  onSelect: (branch: PickupLocation) => void;
   onClose: () => void;
 }
 
-const BranchModal = ({ selectedBranch, onSelect, onClose }: Props) => (
+const BranchModal = ({ selectedBranch, branches, onSelect, onClose }: Props) => {
+  const { t } = useTranslation();
+  
+  return (
   <div style={styles.modalOverlay} className="modal-overlay" onClick={onClose}>
     <div style={styles.branchModal} className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div style={styles.branchHeader}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>Filialni tanlang</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{t('selectBranch')}</h2>
         <button style={styles.modalCloseBtn} onClick={onClose}><CloseIcon /></button>
       </div>
       <div style={styles.branchList}>
-        {BRANCHES.map((branch) => (
+        {branches.map((branch) => (
           <button
             key={branch.id}
             style={selectedBranch.id === branch.id ? styles.branchItemActive : styles.branchItem}
@@ -40,5 +44,6 @@ const BranchModal = ({ selectedBranch, onSelect, onClose }: Props) => (
     </div>
   </div>
 );
+};
 
 export default BranchModal;

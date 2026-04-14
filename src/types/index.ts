@@ -113,6 +113,7 @@ export interface CreateOrderRequest {
   use_balance: boolean;
   order_type: "delivery" | "pickup";
   items: CreateOrderItem[];
+  pickup_location_id?: number;
   delivery_address?: string;
   delivery_flat?: string;
   delivery_entrance?: string;
@@ -158,4 +159,20 @@ export interface OrderListItem {
   items: OrderItemResponse[];
   payment_url: string;
   created_at: string;
+}
+
+export interface PickupLocation {
+  id: number;
+  name: string;
+  address: string;
+}
+
+export interface BusinessInfo {
+  open_time: string;
+  close_time: string;
+  delivery_enabled: boolean;
+  delivery_fee: string;
+  instagram_url: string;
+  phone: string;
+  pickup_locations: PickupLocation[];
 }
