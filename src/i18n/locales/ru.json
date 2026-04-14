@@ -89,5 +89,16 @@
   "deliveryTime": "Время доставки",
   "pickupTimeLabel": "Время получения",
   "sending": "Отправка...",
-  "intercomCode": "Код домофона"
+  "intercomCode": "Код домофона",
+  "menu": "Меню",
+  "home": "Главная",
+  "promotions": "Акции",
+  "aboutUs": "О нас",
+  "branches": "Филиалы",
+  "jobs": "Вакансии",
+  "contactUs": "Связаться с нами",
+  "light": "Светлая",
+  "dark": "Темная",
+  "required": "обязательно",
+  "loadingText": "Загрузка..."
 }

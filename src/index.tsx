@@ -391,7 +391,7 @@ const Index = () => {
                         </div>
                       )}
                       <div className="desktop-cart-item-price">
-                        {formatPrice(Number(product.price) + entry.modifierTotal)} so'm
+                        {formatPrice(Number(product.price) + entry.modifierTotal)} {t('som')}
                       </div>
                     </div>
                     <div className="desktop-cart-item-controls">
@@ -406,7 +406,7 @@ const Index = () => {
               <div className="desktop-cart-footer">
                 <div className="desktop-cart-summary">
                   <span className="desktop-cart-summary-label">{t('total')}</span>
-                  <span className="desktop-cart-summary-total">{formatPrice(totalPrice)} so'm</span>
+                  <span className="desktop-cart-summary-total">{formatPrice(totalPrice)} {t('som')}</span>
                 </div>
                 <button className="desktop-checkout-btn" onClick={handleCheckout}>
                   {t('checkout')}

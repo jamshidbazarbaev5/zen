@@ -89,5 +89,16 @@
   "deliveryTime": "Jetkazиp beriw waqtı",
   "pickupTimeLabel": "Alıp ketиw waqtı",
   "sending": "Jiberilmekte...",
-  "intercomCode": "Domofon kodı"
+  "intercomCode": "Domofon kodı",
+  "menu": "Menyu",
+  "home": "Bas bet",
+  "promotions": "Aksiyalar",
+  "aboutUs": "Biz haqqımızda",
+  "branches": "Filiallar",
+  "jobs": "Jumıs orınları",
+  "contactUs": "Biz benen baylanısıw",
+  "light": "Kúndizgi",
+  "dark": "Túngi",
+  "required": "shart",
+  "loadingText": "Júklenude..."
 }

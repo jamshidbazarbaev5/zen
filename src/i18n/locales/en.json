@@ -89,5 +89,16 @@
   "deliveryTime": "Delivery time",
   "pickupTimeLabel": "Pickup time",
   "sending": "Sending...",
-  "intercomCode": "Intercom code"
+  "intercomCode": "Intercom code",
+  "menu": "Menu",
+  "home": "Home",
+  "promotions": "Promotions",
+  "aboutUs": "About us",
+  "branches": "Branches",
+  "jobs": "Jobs",
+  "contactUs": "Contact us",
+  "light": "Light",
+  "dark": "Dark",
+  "required": "required",
+  "loadingText": "Loading..."
 }

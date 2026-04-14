@@ -89,5 +89,16 @@
   "deliveryTime": "Yetkazib berish vaqti",
   "pickupTimeLabel": "Olib ketish vaqti",
   "sending": "Yuborilmoqda...",
-  "intercomCode": "Domofon kodi"
+  "intercomCode": "Domofon kodi",
+  "menu": "Menyu",
+  "home": "Bosh sahifa",
+  "promotions": "Aksiyalar",
+  "aboutUs": "Biz haqimizda",
+  "branches": "Filiallar",
+  "jobs": "Ish o'rinlari",
+  "contactUs": "Biz bilan bog'lanish",
+  "light": "Kunduzgi",
+  "dark": "Tungi",
+  "required": "shart",
+  "loadingText": "Yuklanmoqda..."
 }

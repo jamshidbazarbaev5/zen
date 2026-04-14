@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import type { Product, ProductDetail, SelectedModifier, CartEntry } from '../types';
 import { styles } from '../styles';
 import { CloseIcon } from './Icons';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
+  const { t } = useTranslation();
   const [detail, setDetail] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -92,11 +94,11 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
         <div style={styles.modalBody}>
           <h2 style={styles.modalTitle}>{product.name}</h2>
           {product.description && <p style={styles.modalDesc}>{product.description}</p>}
-          <p style={styles.modalPrice}>{formatPrice(unitPrice)} so'm</p>
+          <p style={styles.modalPrice}>{formatPrice(unitPrice)} {t('som')}</p>
 
           {loading ? (
             <div style={{ padding: "20px 0", textAlign: "center", color: "var(--text-muted)" }}>
-              Yuklanmoqda...
+              {t('loadingText')}
             </div>
           ) : detail && detail.modifier_groups.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 20 }}>
@@ -116,7 +118,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
                         background: "var(--accent)", color: "#fff", textTransform: "uppercase",
                         letterSpacing: 0.5,
                       }}>
-                        shart
+                        {t('required')}
                       </span>
                     )}
                   </div>
@@ -185,7 +187,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
                 opacity: (!canAdd && detail != null && detail.modifier_groups.some((g) => g.required)) ? 0.5 : 1,
               }}
             >
-              {formatPrice(totalPrice)} so'm
+              {formatPrice(totalPrice)} {t('som')}
             </button>
           </div>
         </div>
