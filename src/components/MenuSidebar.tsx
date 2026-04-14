@@ -64,6 +64,36 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
           <span style={{ fontSize: 15, color: "var(--text-muted, #999)" }}>{theme === "light" ? t('light') : t('dark')}</span>
         </div>
       </div>
+      
+      {/* Contact Button at Bottom */}
+      <div style={{ marginTop: 'auto', padding: '16px' }}>
+        <button
+          onClick={() => { onContact(); onClose(); }}
+          style={{
+            width: '100%',
+            padding: '14px 20px',
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--accent)',
+            color: '#fff',
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+          </svg>
+          {t('contactUs')}
+        </button>
+      </div>
     </div>
   </div>
 );

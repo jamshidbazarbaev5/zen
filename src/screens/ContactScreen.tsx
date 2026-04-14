@@ -110,7 +110,7 @@ const ContactScreen = ({ onBack, businessInfo }: Props) => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>{t('instagram')}</div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>@{businessInfo.instagram_url.split('/').pop()}</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>{businessInfo.instagram_url.split('/').filter(Boolean).pop()}</div>
                 </div>
               </a>
             )}
