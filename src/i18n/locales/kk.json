@@ -100,5 +100,10 @@
   "light": "Kúndizgi",
   "dark": "Túngi",
   "required": "shart",
-  "loadingText": "Júklenude..."
+  "loadingText": "Júklenude...",
+  "rateOurService": "Xızmetimizdi baǵalañ",
+  "addComment": "Túsinikteme qosıñ (qáleseñiz)",
+  "submitRating": "Baǵalawdı jiberiw",
+  "pleaseSelectRating": "Baǵa tañlañ",
+  "thankYouForRating": "Pikir-múlaxazañız ushın raxmet!"
 }

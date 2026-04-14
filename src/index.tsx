@@ -15,6 +15,7 @@ import CartScreen from './screens/CartScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import CashbackScreen from './screens/CashbackScreen';
+import ContactScreen from './screens/ContactScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import MenuSidebar from './components/MenuSidebar';
 import LanguageModal from './components/LanguageModal';
@@ -338,6 +339,10 @@ const Index = () => {
             <CashbackScreen onBack={() => setScreen("profile")} />
           )}
 
+          {screen === "contact" && (
+            <ContactScreen onBack={() => setScreen("home")} businessInfo={businessInfo} />
+          )}
+
           {screen === "cart" && (
             <div className="mobile-cart-screen">
               <CartScreen
@@ -464,6 +469,7 @@ const Index = () => {
           onLanguageOpen={() => setLanguageModalOpen(true)}
           onToggleTheme={toggleTheme}
           onNotifications={() => { setScreen("notifications"); setMenuOpen(false); }}
+          onContact={() => { setScreen("contact"); setMenuOpen(false); }}
         />
       )}
 

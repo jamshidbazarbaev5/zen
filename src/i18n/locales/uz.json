@@ -100,5 +100,10 @@
   "light": "Kunduzgi",
   "dark": "Tungi",
   "required": "shart",
-  "loadingText": "Yuklanmoqda..."
+  "loadingText": "Yuklanmoqda...",
+  "rateOurService": "Xizmatimizni baholang",
+  "addComment": "Izoh qo'shing (ixtiyoriy)",
+  "submitRating": "Baholashni yuborish",
+  "pleaseSelectRating": "Iltimos, baho tanlang",
+  "thankYouForRating": "Fikr-mulohazangiz uchun rahmat!"
 }

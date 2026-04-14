@@ -26,7 +26,7 @@ const ChevronRight = () => (
   </svg>
 );
 
-const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) => {
+const ProfileScreen = ({ onBack, photoUrl, onCashback }: Props) => {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -166,40 +166,6 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, businessInfo }: Props) =>
             </div>
             <ChevronRight />
           </button>
-
-          {/* Contact info */}
-          {businessInfo && (businessInfo.phone || businessInfo.instagram_url) && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-              {businessInfo.phone && (
-                <a
-                  href={`tel:${businessInfo.phone}`}
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "14px 16px", background: "var(--card-bg, var(--bg-primary))", borderRadius: 12,
-                    border: "1px solid var(--border-color)", textDecoration: "none",
-                  }}
-                >
-                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>{t('phone')}</span>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: "var(--accent)" }}>{businessInfo.phone}</span>
-                </a>
-              )}
-              {businessInfo.instagram_url && (
-                <a
-                  href={businessInfo.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "14px 16px", background: "var(--card-bg, var(--bg-primary))", borderRadius: 12,
-                    border: "1px solid var(--border-color)", textDecoration: "none",
-                  }}
-                >
-                  <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>{t('instagram')}</span>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: "var(--accent)" }}>@{businessInfo.instagram_url.split('/').pop()}</span>
-                </a>
-              )}
-            </div>
-          )}
 
           {error && (
             <div style={{ padding: 12, background: "var(--bg-secondary)", borderRadius: 10, color: "var(--text-secondary)", fontSize: 12 }}>

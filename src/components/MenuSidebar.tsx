@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
-import { CloseIcon, GlobeIcon, PaletteIcon, PhoneIcon } from './Icons';
+import { CloseIcon, GlobeIcon, PaletteIcon } from './Icons';
 import { MENU_ITEMS } from '../data/menuItems';
 import { LANGUAGES } from '../data/constants';
 
@@ -12,9 +12,10 @@ interface Props {
   onLanguageOpen: () => void;
   onToggleTheme: () => void;
   onNotifications: () => void;
+  onContact: () => void;
 }
 
-const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications }: Props) => {
+const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications, onContact }: Props) => {
   const { t } = useTranslation();
   
   return (
@@ -34,6 +35,9 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
                   onBranchOpen();
                 } else if (item.labelKey === "orders") {
                   onNotifications();
+                  return;
+                } else if (item.labelKey === "contactUs") {
+                  onContact();
                   return;
                 }
                 onClose();
@@ -58,11 +62,6 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
           <span style={{ width: 32, opacity: 0.6, display: 'flex', alignItems: 'center' }}><PaletteIcon /></span>
           <span style={{ fontSize: 17, color: "var(--text-primary, #222)", flex: 1 }}>{t('theme')}</span>
           <span style={{ fontSize: 15, color: "var(--text-muted, #999)" }}>{theme === "light" ? t('light') : t('dark')}</span>
-        </div>
-        <div style={styles.menuDivider} />
-        <div style={styles.menuItemRow}>
-          <span style={{ width: 32, opacity: 0.6, display: 'flex', alignItems: 'center' }}><PhoneIcon /></span>
-          <span style={{ fontSize: 17, color: "var(--text-primary, #222)" }}>+998 71 200 22 11</span>
         </div>
       </div>
     </div>

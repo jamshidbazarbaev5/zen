@@ -100,5 +100,10 @@
   "light": "Светлая",
   "dark": "Темная",
   "required": "обязательно",
-  "loadingText": "Загрузка..."
+  "loadingText": "Загрузка...",
+  "rateOurService": "Оцените наш сервис",
+  "addComment": "Добавьте комментарий (необязательно)",
+  "submitRating": "Отправить оценку",
+  "pleaseSelectRating": "Пожалуйста, выберите оценку",
+  "thankYouForRating": "Спасибо за ваш отзыв!"
 }

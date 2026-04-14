@@ -100,5 +100,10 @@
   "light": "Light",
   "dark": "Dark",
   "required": "required",
-  "loadingText": "Loading..."
+  "loadingText": "Loading...",
+  "rateOurService": "Rate Our Service",
+  "addComment": "Add a comment (optional)",
+  "submitRating": "Submit Rating",
+  "pleaseSelectRating": "Please select a rating",
+  "thankYouForRating": "Thank you for your feedback!"
 }
