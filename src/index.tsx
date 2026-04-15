@@ -5,8 +5,10 @@ import { styles } from './styles';
 import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
 import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Cart, CartEntry, PickupLocation, BusinessInfo } from './types';
-import { getMenu, authenticateTelegram, createOrder, getBusinessInfo } from './api';
+import { getMenu, authenticateTelegram, authenticateTelegramLogin, createOrder, getBusinessInfo } from './api';
+import type { TelegramLoginData } from './api';
 import { isTelegram, getInitData, getPhotoUrl, openPaymentLink } from './telegram';
+import TelegramLoginButton from './components/TelegramLoginButton';
 import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
 import type { CreateOrderRequest } from './types';
 
@@ -58,6 +60,7 @@ const Index = () => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [businessInfo, setBusinessInfo] = useState<BusinessInfo | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
@@ -72,9 +75,20 @@ const Index = () => {
     }
   }, [user, i18n]);
 
+  const handleTelegramLogin = async (loginData: TelegramLoginData) => {
+    try {
+      await authenticateTelegramLogin(loginData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Telegram login failed:', error);
+    }
+  };
+
   useEffect(() => {
     if (isTelegram()) {
-      authenticateTelegram(getInitData()).catch(console.error);
+      authenticateTelegram(getInitData())
+        .then(() => setIsAuthenticated(true))
+        .catch(console.error);
       setPhotoUrl(getPhotoUrl());
     }
     // Fetch business info
@@ -281,6 +295,18 @@ const Index = () => {
     product: products.find((x) => x.id === entry.productId)!,
     entry,
   }));
+
+  if (!isTelegram() && !isAuthenticated) {
+    return (
+      <div style={{ ...styles.container, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <h2 style={{ marginBottom: 8, color: 'var(--text-primary)' }}>Zen Coffee</h2>
+        <p style={{ marginBottom: 24, color: 'var(--text-secondary)', textAlign: 'center' }}>
+          {t('loginWithTelegram')}
+        </p>
+        <TelegramLoginButton onAuth={handleTelegramLogin} />
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container} className="app-container">

@@ -42,6 +42,21 @@ export const authenticateTelegram = async (initData: string): Promise<TelegramAu
   return data;
 };
 
+export interface TelegramLoginData {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  phone_number?: string;
+  auth_date: number;
+  hash: string;
+}
+
+export const authenticateTelegramLogin = async (loginData: TelegramLoginData): Promise<TelegramAuthResponse> => {
+  const { data } = await api.post<TelegramAuthResponse>("/auth/telegram-login/", loginData);
+  api.defaults.headers.common["Authorization"] = `Bearer ${data.access}`;
+  return data;
+};
+
 export const getProductDetail = async (productId: number): Promise<ProductDetail> => {
   const { data } = await api.get<ProductDetail>(`/menu/${productId}/`);
   return data;
