@@ -14,6 +14,7 @@ declare global {
         };
         ready: () => void;
         expand: () => void;
+        openLink: (url: string) => void;
       };
     };
   }
@@ -29,4 +30,12 @@ export function getInitData(): string {
 
 export function getPhotoUrl(): string | null {
   return window.Telegram?.WebApp?.initDataUnsafe?.user?.photo_url ?? null;
+}
+
+export function openPaymentLink(url: string): void {
+  if (window.Telegram?.WebApp?.openLink) {
+    window.Telegram.WebApp.openLink(url);
+  } else {
+    window.open(url, "_blank");
+  }
 }

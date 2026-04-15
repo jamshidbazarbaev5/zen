@@ -6,7 +6,7 @@ import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUp
 import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Cart, CartEntry, PickupLocation, BusinessInfo } from './types';
 import { getMenu, authenticateTelegram, createOrder, getBusinessInfo } from './api';
-import { isTelegram, getInitData, getPhotoUrl } from './telegram';
+import { isTelegram, getInitData, getPhotoUrl, openPaymentLink } from './telegram';
 import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
 import type { CreateOrderRequest } from './types';
 
@@ -249,11 +249,12 @@ const Index = () => {
       };
       console.log("ORDER PAYLOAD:", JSON.stringify(payload, null, 2));
       const result = await createOrder(payload);
+      console.log("ORDER RESULT:", result);
       clearCart();
       setTimePickerOpen(false);
       setScreen("notifications");
       if (result.payment_url) {
-        window.open(result.payment_url, "_blank");
+        openPaymentLink(result.payment_url);
       }
     } catch (err: any) {
       const respMsg = err?.response?.data
@@ -476,7 +477,11 @@ const Index = () => {
       {languageModalOpen && (
         <LanguageModal
           selectedLanguage={selectedLanguage}
-          onSelect={(code) => { setSelectedLanguage(code); setLanguageModalOpen(false); }}
+          onSelect={(code) => { 
+            setSelectedLanguage(code); 
+            i18n.changeLanguage(code);
+            setLanguageModalOpen(false); 
+          }}
           onClose={() => setLanguageModalOpen(false)}
         />
       )}
