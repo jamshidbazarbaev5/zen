@@ -65,7 +65,7 @@ export interface Language {
   icon: string;
 }
 
-export type Screen = "home" | "cart" | "notifications" | "profile" | "cashback" | "contact";
+export type Screen = "home" | "cart" | "notifications" | "profile" | "cashback" | "contact" | "about";
 
 export interface CashbackTier {
   name: string;

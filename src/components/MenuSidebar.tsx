@@ -13,9 +13,10 @@ interface Props {
   onToggleTheme: () => void;
   onNotifications: () => void;
   onContact: () => void;
+  onAbout: () => void;
 }
 
-const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications, onContact }: Props) => {
+const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications, onContact, onAbout }: Props) => {
   const { t } = useTranslation();
   
   return (
@@ -38,6 +39,9 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
                   return;
                 } else if (item.labelKey === "contactUs") {
                   onContact();
+                  return;
+                } else if (item.labelKey === "aboutUs") {
+                  onAbout();
                   return;
                 }
                 onClose();
