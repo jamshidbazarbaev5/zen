@@ -1,71 +1,71 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { TelegramLoginData } from '../api';
 
-const BOT_DOMAIN = 'https://zen-coffee.uz';
+const BOT_USERNAME = 'zencoffee_bot';
+const AUTH_REDIRECT_URL = window.location.origin + '/';
 
 interface Props {
   onAuth: (user: TelegramLoginData) => void;
 }
 
+/**
+ * Parse Telegram auth data from URL query params after redirect.
+ * Telegram redirects to: AUTH_URL?id=...&first_name=...&hash=...
+ */
+export function parseTelegramAuthFromUrl(): TelegramLoginData | null {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const hash = params.get('hash');
+  const auth_date = params.get('auth_date');
+
+  if (!id || !hash || !auth_date) return null;
+
+  const data: TelegramLoginData = {
+    id: Number(id),
+    first_name: params.get('first_name') || '',
+    auth_date: Number(auth_date),
+    hash,
+  };
+
+  if (params.get('last_name')) data.last_name = params.get('last_name')!;
+  if (params.get('username')) data.username = params.get('username')!;
+  if (params.get('photo_url')) data.photo_url = params.get('photo_url')!;
+
+  // Clean URL
+  window.history.replaceState(null, '', window.location.pathname);
+
+  return data;
+}
+
 const TelegramLoginButton = ({ onAuth }: Props) => {
-  // Listen for postMessage from the iframe
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Check for redirect auth data on mount
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'telegram-login' && event.data.payload) {
-        console.log('Telegram auth received:', event.data.payload);
-        onAuth(event.data.payload);
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [onAuth]);
+    const data = parseTelegramAuthFromUrl();
+    if (data) {
+      console.log('Telegram auth from redirect:', data);
+      onAuth(data);
+    }
+  }, []);
 
-  // Encode the HTML as a data URI served under the bot domain won't work,
-  // so we create a blob and use it. The widget checks document.location,
-  // so we need the page hosted on zen-coffee.uz.
-  // Serve this HTML at: https://zen-coffee.uz/telegram-login.html
-  const iframeSrc = BOT_DOMAIN + '/telegram-login.html';
+  // Render the official Telegram widget with redirect mode
+  useEffect(() => {
+    if (!containerRef.current) return;
+    containerRef.current.innerHTML = '';
 
-  return (
-    <iframe
-      src={iframeSrc}
-      style={{
-        border: 'none',
-        width: 300,
-        height: 60,
-        overflow: 'hidden',
-      }}
-      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-    />
-  );
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?23';
+    script.async = true;
+    script.setAttribute('data-telegram-login', BOT_USERNAME);
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-auth-url', AUTH_REDIRECT_URL);
+    script.setAttribute('data-request-access', 'write');
+
+    containerRef.current.appendChild(script);
+  }, []);
+
+  return <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }} />;
 };
 
 export default TelegramLoginButton;
-
-/**
- * HOST THIS FILE AT: https://zen-coffee.uz/telegram-login.html
- *
- * Content (copy the WIDGET_HTML above):
- *
- * <!DOCTYPE html>
- * <html>
- * <head>
- *   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- *   <style>
- *     body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:transparent; }
- *   </style>
- * </head>
- * <body>
- *   <script async src="https://telegram.org/js/telegram-widget.js?22"
- *     data-telegram-login="zencoffee_bot"
- *     data-size="large"
- *     data-onauth="onTelegramAuth(user)"
- *     data-request-access="write"></script>
- *   <script>
- *     function onTelegramAuth(user) {
- *       window.parent.postMessage({ type: 'telegram-login', payload: user }, '*');
- *     }
- *   </script>
- * </body>
- * </html>
- */
