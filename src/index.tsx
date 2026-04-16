@@ -76,11 +76,13 @@ const Index = () => {
   }, [user, i18n]);
 
   const handleTelegramLogin = async (loginData: TelegramLoginData) => {
+    console.log('Telegram login data received:', loginData);
     try {
-      await authenticateTelegramLogin(loginData);
+      const response = await authenticateTelegramLogin(loginData);
+      console.log('Telegram login success:', response);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Telegram login failed:', error);
+    } catch (error: any) {
+      console.error('Telegram login failed:', error?.response?.data || error);
     }
   };
 
