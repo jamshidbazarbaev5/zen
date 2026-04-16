@@ -3,71 +3,70 @@ import type { TelegramLoginData } from '../api';
 
 const BOT_USERNAME = 'zencoffee_bot';
 
-declare global {
-  interface Window {
-    onTelegramLoginAuth?: (user: TelegramLoginData) => void;
-  }
-}
-
 interface Props {
   onAuth: (user: TelegramLoginData) => void;
+}
+
+/**
+ * Parse Telegram auth data from URL query params after redirect.
+ * Telegram appends: ?id=...&first_name=...&auth_date=...&hash=...
+ */
+export function parseTelegramAuthFromUrl(): TelegramLoginData | null {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const hash = params.get('hash');
+  const auth_date = params.get('auth_date');
+
+  if (!id || !hash || !auth_date) return null;
+
+  const data: TelegramLoginData = {
+    id: Number(id),
+    first_name: params.get('first_name') || '',
+    auth_date: Number(auth_date),
+    hash,
+  };
+
+  if (params.get('last_name')) data.last_name = params.get('last_name')!;
+  if (params.get('username')) data.username = params.get('username')!;
+  if (params.get('photo_url')) data.photo_url = params.get('photo_url')!;
+  if (params.get('phone_number')) data.phone_number = params.get('phone_number')!;
+
+  // Clean URL after reading params
+  window.history.replaceState(null, '', window.location.pathname);
+
+  return data;
 }
 
 const TelegramLoginButton = ({ onAuth }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Handle callback from widget (popup stays open, posts back)
+  // Check for redirect auth data on mount
   useEffect(() => {
-    window.onTelegramLoginAuth = (user) => {
-      console.log('Telegram widget callback fired:', user);
-      onAuth(user);
-    };
+    const data = parseTelegramAuthFromUrl();
+    if (data) {
+      console.log('Telegram auth from redirect:', data);
+      onAuth(data);
+    }
+  }, []);
 
+  // Render widget with redirect mode
+  useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
     script.setAttribute('data-telegram-login', BOT_USERNAME);
     script.setAttribute('data-size', 'large');
-    script.setAttribute('data-onauth', 'onTelegramLoginAuth(user)');
+    script.setAttribute('data-auth-url', window.location.origin + '/');
     script.setAttribute('data-request-access', 'write');
 
     containerRef.current?.appendChild(script);
 
     return () => {
-      delete window.onTelegramLoginAuth;
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
     };
-  }, [onAuth]);
-
-  // Handle redirect-based auth (tgAuthResult in URL hash after page reload)
-  useEffect(() => {
-    const checkHash = () => {
-      const hash = window.location.hash;
-      if (!hash.includes('tgAuthResult=')) return;
-
-      try {
-        const match = hash.match(/tgAuthResult=([^&]+)/);
-        if (match?.[1]) {
-          const base64 = decodeURIComponent(match[1]);
-          const json = atob(base64);
-          const data: TelegramLoginData = JSON.parse(json);
-          console.log('Telegram auth from URL hash:', data);
-          if (data.id && data.hash) {
-            onAuth(data);
-          }
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      } catch (e) {
-        console.error('Failed to parse tgAuthResult:', e);
-      }
-    };
-
-    checkHash();
-    window.addEventListener('hashchange', checkHash);
-    return () => window.removeEventListener('hashchange', checkHash);
-  }, [onAuth]);
+  }, []);
 
   return <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }} />;
 };
