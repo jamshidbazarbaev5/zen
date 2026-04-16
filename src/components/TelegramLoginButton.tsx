@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { TelegramLoginData } from '../api';
 
-const BOT_USERNAME = 'zen-lake.vercel';
+const BOT_USERNAME = 'zencoffee_bot';
 
 declare global {
   interface Window {
