@@ -162,27 +162,25 @@ const Index = () => {
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Quick add from product grid. If product has required modifiers
-  // without a sensible default, open the detail modal to force selection.
+  // Quick add from product grid. If the product has any modifier groups,
+  // open the detail modal so the user can review/change selections
+  // (required groups get the first modifier pre-selected as default).
   const addToCart = async (id: number) => {
     const key = String(id);
-    // If already in cart (no-modifier variant), just bump quantity.
-    if (cart[key]) {
-      setCart((c) => ({ ...c, [key]: { ...c[key], quantity: c[key].quantity + 1 } }));
-      return;
-    }
     try {
       const detail = await getProductDetail(id);
-      const needsSelection = detail.modifier_groups.some(
-        (g) => g.required && !g.modifiers.some((m) => m.default_amount > 0)
-      );
-      if (needsSelection) {
+      if (detail.modifier_groups.length > 0) {
         const product = products.find((p) => p.id === id);
         if (product) setSelectedProduct(product);
         return;
       }
     } catch (err) {
       console.error('Failed to fetch product detail:', err);
+    }
+    // No modifiers: bump quantity or add fresh entry.
+    if (cart[key]) {
+      setCart((c) => ({ ...c, [key]: { ...c[key], quantity: c[key].quantity + 1 } }));
+      return;
     }
     setCart((c) => {
       const existing = c[key];

@@ -25,12 +25,19 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
     getProductDetail(product.id)
       .then((d) => {
         setDetail(d);
-        // Pre-select only when a modifier has default_amount > 0.
-        // Otherwise leave unselected so the user must choose.
+        // Pre-select a modifier when one has default_amount > 0.
+        // For required groups with no explicit default, pre-select the first modifier.
+        // Otherwise leave unselected.
         const initial: Record<number, number | null> = {};
         d.modifier_groups.forEach((g) => {
           const def = g.modifiers.find((m) => m.default_amount > 0);
-          initial[g.id] = def?.id ?? null;
+          if (def) {
+            initial[g.id] = def.id;
+          } else if (g.required && g.modifiers.length > 0) {
+            initial[g.id] = g.modifiers[0].id;
+          } else {
+            initial[g.id] = null;
+          }
         });
         setSelected(initial);
       })

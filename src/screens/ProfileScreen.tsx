@@ -92,39 +92,43 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback }: Props) => {
             </div>
 
             {editing ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", maxWidth: 260 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 10, width: "100%", maxWidth: 320 }}>
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   autoFocus
                   style={{
-                    flex: 1, fontSize: 18, fontWeight: 600, textAlign: "center",
-                    padding: "8px 14px", borderRadius: 10,
+                    width: "100%", boxSizing: "border-box",
+                    fontSize: 18, fontWeight: 600, textAlign: "center",
+                    padding: "10px 14px", borderRadius: 10,
                     border: "1.5px solid var(--accent)", background: "var(--bg-secondary)",
                     color: "var(--text-primary)", outline: "none",
                   }}
                 />
-                <button
-                  disabled={saving}
-                  onClick={handleSave}
-                  style={{
-                    padding: "8px 16px", borderRadius: 10, border: "none",
-                    background: "var(--accent)", color: "#fff", fontSize: 14, fontWeight: 600,
-                    cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1,
-                  }}
-                >
-                  {saving ? "..." : "OK"}
-                </button>
-                <button
-                  onClick={() => { setEditing(false); setEditName(profile.name); }}
-                  style={{
-                    padding: "8px 12px", borderRadius: 10, border: "1px solid var(--border-color)",
-                    background: "var(--bg-secondary)", color: "var(--text-secondary)",
-                    fontSize: 14, cursor: "pointer",
-                  }}
-                >
-                  X
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => { setEditing(false); setEditName(profile.name); }}
+                    style={{
+                      flex: 1, padding: "10px 0", borderRadius: 10,
+                      border: "1px solid var(--border-color)",
+                      background: "var(--bg-secondary)", color: "var(--text-secondary)",
+                      fontSize: 14, fontWeight: 600, cursor: "pointer",
+                    }}
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    disabled={saving}
+                    onClick={handleSave}
+                    style={{
+                      flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
+                      background: "var(--accent)", color: "#fff", fontSize: 14, fontWeight: 600,
+                      cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1,
+                    }}
+                  >
+                    {saving ? "..." : t('save')}
+                  </button>
+                </div>
               </div>
             ) : (
               <div
