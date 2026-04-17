@@ -65,7 +65,7 @@ export interface Language {
   icon: string;
 }
 
-export type Screen = "home" | "cart" | "notifications" | "profile" | "cashback" | "contact" | "about";
+export type Screen = "home" | "cart" | "notifications" | "profile" | "cashback" | "contact" | "about" | "balance" | "deposit";
 
 export interface CashbackTier {
   name: string;
@@ -82,6 +82,27 @@ export interface CashbackInfo {
   current_tier: CashbackTier;
   next_tier: CashbackNextTier | null;
   tiers: CashbackTier[];
+}
+
+export type BalanceTxType = "deposit" | "cashback" | "spend" | string;
+
+export interface BalanceTransaction {
+  id: number;
+  amount: string;
+  tx_type: BalanceTxType;
+  order_number: string | null;
+  note: string;
+  created_at: string;
+}
+
+export interface BalanceHistory {
+  balance: string;
+  transactions: BalanceTransaction[];
+}
+
+export interface DepositResponse {
+  payment_url: string;
+  [key: string]: unknown;
 }
 
 export interface CustomerProfile {

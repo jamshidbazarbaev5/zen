@@ -10,6 +10,7 @@ interface Props {
   onBack: () => void;
   photoUrl: string | null;
   onCashback: () => void;
+  onBalanceHistory?: () => void;
   businessInfo: BusinessInfo | null;
 }
 
@@ -26,7 +27,7 @@ const ChevronRight = () => (
   </svg>
 );
 
-const ProfileScreen = ({ onBack, photoUrl, onCashback }: Props) => {
+const ProfileScreen = ({ onBack, photoUrl, onCashback, onBalanceHistory }: Props) => {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -144,13 +145,42 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback }: Props) => {
           {/* Info rows */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <InfoRow label={t('phone')} value={profile.phone || t('notSpecified')} />
-            <InfoRow label={t('balance')} value={`${formatPrice(Number(profile.balance))} ${t('som')}`} accent />
+            <InfoRow
+              label={t('balance')}
+              value={`${formatPrice(Number(profile.balance))} ${t('som')}`}
+              accent
+              onClick={onBalanceHistory}
+            />
             <InfoRow label={t('totalSpent')} value={`${formatPrice(Number(profile.total_spent))} ${t('som')}`} />
             <InfoRow
               label={t('language')}
               value={profile.lang === "uz" ? "O'zbek" : profile.lang === "ru" ? "Русский" : profile.lang === "en" ? "English" : profile.lang}
             />
           </div>
+
+          {/* Balance history link */}
+          {onBalanceHistory && (
+            <button
+              onClick={onBalanceHistory}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                width: "100%", padding: "16px 18px", borderRadius: 14,
+                background: "var(--card-bg, var(--bg-primary))",
+                border: "1px solid var(--border-color)",
+                cursor: "pointer",
+                color: "var(--text-primary)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
+                <span style={{ fontSize: 16, fontWeight: 600 }}>{t('balanceHistory')}</span>
+              </div>
+              <ChevronRight />
+            </button>
+          )}
 
           {/* Cashback link */}
           <button
@@ -189,12 +219,26 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback }: Props) => {
   );
 };
 
-const InfoRow = ({ label, value, accent }: { label: string; value: string; accent?: boolean }) => (
-  <div style={{
-    display: "flex", justifyContent: "space-between", alignItems: "center",
-    padding: "14px 16px", background: "var(--card-bg, var(--bg-primary))", borderRadius: 12,
-    border: "1px solid var(--border-color)",
-  }}>
+const InfoRow = ({
+  label,
+  value,
+  accent,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+  onClick?: () => void;
+}) => (
+  <div
+    onClick={onClick}
+    style={{
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "14px 16px", background: "var(--card-bg, var(--bg-primary))", borderRadius: 12,
+      border: "1px solid var(--border-color)",
+      cursor: onClick ? "pointer" : "default",
+    }}
+  >
     <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>{label}</span>
     <span style={{ fontSize: 15, fontWeight: 600, color: accent ? "var(--accent)" : "var(--text-primary)" }}>{value}</span>
   </div>

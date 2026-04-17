@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile, CashbackInfo, ProductDetail, BusinessInfo } from "../types";
+import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListItem, CustomerProfile, CashbackInfo, ProductDetail, BusinessInfo, BalanceHistory, DepositResponse } from "../types";
 
 const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
@@ -94,6 +94,18 @@ export const updateMyProfile = async (data: { name?: string; lang?: string }): P
 
 export const getCashbackInfo = async (): Promise<CashbackInfo> => {
   const { data } = await api.get<CashbackInfo>("/cashback/info/");
+  return data;
+};
+
+export const getBalanceHistory = async (): Promise<BalanceHistory> => {
+  const { data } = await api.get<BalanceHistory>("/cashback/balance-history/");
+  return data;
+};
+
+export const createDeposit = async (amount: string | number): Promise<DepositResponse> => {
+  const { data } = await api.post<DepositResponse>("/cashback/deposit/", {
+    amount: String(amount),
+  });
   return data;
 };
 

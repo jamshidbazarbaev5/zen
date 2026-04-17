@@ -19,6 +19,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import CashbackScreen from './screens/CashbackScreen';
 import ContactScreen from './screens/ContactScreen';
 import AboutScreen from './screens/AboutScreen';
+import BalanceHistoryScreen from './screens/BalanceHistoryScreen';
+import DepositScreen from './screens/DepositScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import MenuSidebar from './components/MenuSidebar';
 import LanguageModal from './components/LanguageModal';
@@ -255,11 +257,15 @@ const Index = () => {
 
   const handleCheckout = () => setTimePickerOpen(true);
 
-  const handleOrderSubmit = async (time: string, delivery?: DeliveryDetails) => {
+  const handleOrderSubmit = async (
+    date: string,
+    time: string,
+    useBalance: boolean,
+    delivery?: DeliveryDetails,
+  ) => {
     setOrderLoading(true);
     setOrderError(null);
     try {
-      const today = new Date().toISOString().slice(0, 10);
       const items = Object.values(cart).map((entry) => ({
         product_id: entry.productId,
         quantity: entry.quantity,
@@ -269,9 +275,9 @@ const Index = () => {
         })),
       }));
       const payload: CreateOrderRequest = {
-        pickup_time: `${today}T${time}:00+05:00`,
+        pickup_time: `${date}T${time}:00+05:00`,
         total_amount: totalPrice.toFixed(2),
-        use_balance: false,
+        use_balance: useBalance,
         order_type: deliveryMode,
         items,
         ...(deliveryMode === "pickup" && selectedBranch ? {
@@ -385,11 +391,31 @@ const Index = () => {
           )}
 
           {screen === "profile" && (
-            <ProfileScreen onBack={() => setScreen("home")} photoUrl={photoUrl} onCashback={() => setScreen("cashback")} businessInfo={businessInfo} />
+            <ProfileScreen
+              onBack={() => setScreen("home")}
+              photoUrl={photoUrl}
+              onCashback={() => setScreen("cashback")}
+              onBalanceHistory={() => setScreen("balance")}
+              businessInfo={businessInfo}
+            />
           )}
 
           {screen === "cashback" && (
             <CashbackScreen onBack={() => setScreen("profile")} />
+          )}
+
+          {screen === "balance" && (
+            <BalanceHistoryScreen
+              onBack={() => setScreen("profile")}
+              onTopUp={() => setScreen("deposit")}
+            />
+          )}
+
+          {screen === "deposit" && (
+            <DepositScreen
+              onBack={() => setScreen("balance")}
+              balance={user?.balance ?? null}
+            />
           )}
 
           {screen === "contact" && (
@@ -588,6 +614,7 @@ const Index = () => {
           loading={orderLoading}
           error={orderError}
           isDelivery={deliveryMode === "delivery"}
+          balance={user?.balance ?? null}
         />
       )}
 
