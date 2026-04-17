@@ -162,11 +162,22 @@ const Index = () => {
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Quick add from product grid. If the product has any modifier groups,
-  // open the detail modal so the user can review/change selections
-  // (required groups get the first modifier pre-selected as default).
+  // Quick add from product grid. If the product has modifier groups AND there
+  // is no existing cart entry yet, open the detail modal so the user can
+  // choose. Once an entry exists for this product (any modifier combo), the
+  // `+` just bumps the quantity of that existing entry — no modal reopening.
   const addToCart = async (id: number) => {
-    const key = String(id);
+    // Find existing cart entries for this product.
+    const existingEntries = Object.entries(cart).filter(([, e]) => e.productId === id);
+    if (existingEntries.length > 0) {
+      // Bump the (first/only) existing entry — preserves its modifiers.
+      const [existingKey, existingEntry] = existingEntries[0];
+      setCart((c) => ({
+        ...c,
+        [existingKey]: { ...existingEntry, quantity: existingEntry.quantity + 1 },
+      }));
+      return;
+    }
     try {
       const detail = await getProductDetail(id);
       if (detail.modifier_groups.length > 0) {
@@ -177,30 +188,25 @@ const Index = () => {
     } catch (err) {
       console.error('Failed to fetch product detail:', err);
     }
-    // No modifiers: bump quantity or add fresh entry.
-    if (cart[key]) {
-      setCart((c) => ({ ...c, [key]: { ...c[key], quantity: c[key].quantity + 1 } }));
-      return;
-    }
-    setCart((c) => {
-      const existing = c[key];
-      if (existing) {
-        return { ...c, [key]: { ...existing, quantity: existing.quantity + 1 } };
-      }
-      return { ...c, [key]: { productId: id, quantity: 1, modifiers: [], modifierTotal: 0 } };
-    });
+    // No modifiers: add fresh entry.
+    const key = String(id);
+    setCart((c) => ({
+      ...c,
+      [key]: { productId: id, quantity: 1, modifiers: [], modifierTotal: 0 },
+    }));
   };
 
   const removeFromCart = (id: number) => {
-    const key = String(id);
     setCart((c) => {
-      const existing = c[key];
-      if (!existing) return c;
+      // Find the cart entry for this product (honors modifier-based keys).
+      const entryKey = Object.keys(c).find((k) => c[k].productId === id);
+      if (!entryKey) return c;
+      const existing = c[entryKey];
       if (existing.quantity > 1) {
-        return { ...c, [key]: { ...existing, quantity: existing.quantity - 1 } };
+        return { ...c, [entryKey]: { ...existing, quantity: existing.quantity - 1 } };
       }
       const n = { ...c };
-      delete n[key];
+      delete n[entryKey];
       return n;
     });
   };

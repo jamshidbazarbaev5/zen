@@ -107,7 +107,9 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
             </div>
           ) : detail && detail.modifier_groups.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 20 }}>
-              {detail.modifier_groups.map((group) => (
+              {[...detail.modifier_groups]
+                .sort((a, b) => Number(b.required) - Number(a.required))
+                .map((group) => (
                 <div key={group.id}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
