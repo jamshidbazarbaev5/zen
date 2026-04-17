@@ -5,7 +5,7 @@ import { styles } from './styles';
 import { UserIcon, ChevronDownIcon, MenuIcon, HomeIcon, ShoppingBagIcon, ArrowUpIcon, TrashIcon } from './components/Icons';
 import { formatPrice } from './utils/formatPrice';
 import type { Product, MenuCategory, Screen, DeliveryMode, Cart, CartEntry, PickupLocation, BusinessInfo } from './types';
-import { getMenu, authenticateTelegram, authenticateTelegramLogin, createOrder, getBusinessInfo } from './api';
+import { getMenu, authenticateTelegram, authenticateTelegramLogin, createOrder, getBusinessInfo, getProductDetail } from './api';
 import type { TelegramLoginData } from './api';
 import { isTelegram, getInitData, getPhotoUrl, openPaymentLink } from './telegram';
 import TelegramLoginButton from './components/TelegramLoginButton';
@@ -60,7 +60,7 @@ const Index = () => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [businessInfo, setBusinessInfo] = useState<BusinessInfo | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("access_token"));
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("theme") as "light" | "dark") || "light";
@@ -162,9 +162,28 @@ const Index = () => {
     (p) => p.category === activeCategory && p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Quick add (no modifiers) from product grid
-  const addToCart = (id: number) => {
+  // Quick add from product grid. If product has required modifiers
+  // without a sensible default, open the detail modal to force selection.
+  const addToCart = async (id: number) => {
     const key = String(id);
+    // If already in cart (no-modifier variant), just bump quantity.
+    if (cart[key]) {
+      setCart((c) => ({ ...c, [key]: { ...c[key], quantity: c[key].quantity + 1 } }));
+      return;
+    }
+    try {
+      const detail = await getProductDetail(id);
+      const needsSelection = detail.modifier_groups.some(
+        (g) => g.required && !g.modifiers.some((m) => m.default_amount > 0)
+      );
+      if (needsSelection) {
+        const product = products.find((p) => p.id === id);
+        if (product) setSelectedProduct(product);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to fetch product detail:', err);
+    }
     setCart((c) => {
       const existing = c[key];
       if (existing) {

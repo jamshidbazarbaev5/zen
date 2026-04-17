@@ -5,6 +5,12 @@ const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
 });
 
+// Restore token from localStorage on load
+const savedToken = localStorage.getItem("access_token");
+if (savedToken) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+}
+
 export const getMenu = async (lang: string): Promise<MenuCategory[]> => {
   const { data } = await api.get<MenuCategory[]>("/menu/", {
     params: { lang },
@@ -39,6 +45,7 @@ export const authenticateTelegram = async (initData: string): Promise<TelegramAu
   });
   console.log("Telegram auth response:", data);
   api.defaults.headers.common["Authorization"] = `Bearer ${data.access}`;
+  localStorage.setItem("access_token", data.access);
   return data;
 };
 
@@ -56,6 +63,7 @@ export interface TelegramLoginData {
 export const authenticateTelegramLogin = async (loginData: TelegramLoginData): Promise<TelegramAuthResponse> => {
   const { data } = await api.post<TelegramAuthResponse>("/auth/telegram-login/", loginData);
   api.defaults.headers.common["Authorization"] = `Bearer ${data.access}`;
+  localStorage.setItem("access_token", data.access);
   return data;
 };
 
