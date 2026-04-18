@@ -5,6 +5,7 @@ import { styles } from '../styles';
 import { CloseIcon } from './Icons';
 import { formatPrice } from '../utils/formatPrice';
 import { getProductDetail } from '../api';
+import CoffeeLoader from './CoffeeLoader';
 
 interface Props {
   product: Product;
@@ -102,9 +103,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }: Props) => {
           <p style={styles.modalPrice}>{formatPrice(unitPrice)} {t('som')}</p>
 
           {loading ? (
-            <div style={{ padding: "20px 0", textAlign: "center", color: "var(--text-muted)" }}>
-              {t('loadingText')}
-            </div>
+            <CoffeeLoader size={84} />
           ) : detail && detail.modifier_groups.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 20 }}>
               {[...detail.modifier_groups]

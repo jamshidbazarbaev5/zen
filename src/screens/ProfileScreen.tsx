@@ -4,6 +4,7 @@ import { styles } from '../styles';
 import { ArrowLeftIcon, UserIcon } from '../components/Icons';
 import { getMyProfile, updateMyProfile } from '../api';
 import { formatPrice } from '../utils/formatPrice';
+import CoffeeLoader from '../components/CoffeeLoader';
 import type { CustomerProfile, BusinessInfo } from '../types';
 
 interface Props {
@@ -65,13 +66,7 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, onBalanceHistory }: Props
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, paddingTop: 30 }}>
-          <div style={{ width: 90, height: 90, borderRadius: "50%", background: "var(--bg-secondary)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div style={{ width: 140, height: 20, borderRadius: 8, background: "var(--bg-secondary)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{ width: "100%", height: 52, borderRadius: 12, background: "var(--bg-secondary)", animation: "pulse 1.5s ease-in-out infinite", opacity: 1 - i * 0.15 }} />
-          ))}
-        </div>
+        <CoffeeLoader size={110} label={t('loadingText')} />
       ) : error && !profile ? (
         <div style={{ padding: 16, background: "var(--bg-secondary)", borderRadius: 12, color: "var(--text-secondary)", fontSize: 13 }}>
           {error}

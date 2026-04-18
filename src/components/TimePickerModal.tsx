@@ -80,7 +80,8 @@ const TimePickerModal = ({
     );
   };
 
-  const hasBalance = balance != null && Number(balance) > 0;
+  const balanceNum = balance != null ? Number(balance) : 0;
+  const hasBalance = balanceNum > 0;
 
   const dateBtnStyle = (selected: boolean): React.CSSProperties => ({
     flex: 1,
@@ -184,54 +185,59 @@ const TimePickerModal = ({
         />
 
         {/* Use balance */}
-        {hasBalance && (
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: useBalance
-                ? "1.5px solid var(--accent, #E86A33)"
-                : "1px solid var(--border-color, #ddd)",
-              background: useBalance
-                ? "var(--accent-light, rgba(232,106,51,0.08))"
-                : "var(--bg-secondary, #f5f5f5)",
-              cursor: "pointer",
-              marginBottom: 16,
-              userSelect: "none",
-            }}
-          >
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: "var(--text-primary, #222)",
-                }}
-              >
-                {t("payWithBalance")}
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-muted, #888)",
-                  marginTop: 2,
-                }}
-              >
-                {t("yourBalance")}: {formatPrice(Number(balance))} {t("som")}
-              </div>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "12px 14px",
+            borderRadius: 12,
+            border: useBalance
+              ? "1.5px solid var(--accent, #E86A33)"
+              : "1px solid var(--border-color, #ddd)",
+            background: useBalance
+              ? "var(--accent-light, rgba(232,106,51,0.08))"
+              : "var(--bg-secondary, #f5f5f5)",
+            cursor: hasBalance ? "pointer" : "not-allowed",
+            marginBottom: 16,
+            userSelect: "none",
+            opacity: hasBalance ? 1 : 0.6,
+          }}
+        >
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--text-primary, #222)",
+              }}
+            >
+              {t("payWithBalance")}
             </div>
-            <input
-              type="checkbox"
-              checked={useBalance}
-              onChange={(e) => setUseBalance(e.target.checked)}
-              style={{ width: 20, height: 20, cursor: "pointer", accentColor: "var(--accent, #E86A33)" }}
-            />
-          </label>
-        )}
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--text-muted, #888)",
+                marginTop: 2,
+              }}
+            >
+              {t("yourBalance")}: {formatPrice(balanceNum)} {t("som")}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            checked={useBalance}
+            disabled={!hasBalance}
+            onChange={(e) => setUseBalance(e.target.checked)}
+            style={{
+              width: 20,
+              height: 20,
+              cursor: hasBalance ? "pointer" : "not-allowed",
+              accentColor: "var(--accent, #E86A33)",
+            }}
+          />
+        </label>
 
         {isDelivery && (
           <>

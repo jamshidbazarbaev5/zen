@@ -4,6 +4,7 @@ import { styles } from "../styles";
 import { ArrowLeftIcon } from "../components/Icons";
 import { getBalanceHistory } from "../api";
 import { formatPrice } from "../utils/formatPrice";
+import CoffeeLoader from "../components/CoffeeLoader";
 import type { BalanceHistory, BalanceTransaction } from "../types";
 
 interface Props {
@@ -78,20 +79,7 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              style={{
-                background: "var(--bg-secondary)",
-                borderRadius: 14,
-                height: i === 1 ? 110 : 62,
-                animation: "pulse 1.5s ease-in-out infinite",
-                opacity: 1 - i * 0.15,
-              }}
-            />
-          ))}
-        </div>
+        <CoffeeLoader size={110} label={t("loadingText")} />
       ) : error ? (
         <div
           style={{

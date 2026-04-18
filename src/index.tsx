@@ -554,6 +554,8 @@ const Index = () => {
           onNotifications={() => { setScreen("notifications"); setMenuOpen(false); }}
           onContact={() => { setScreen("contact"); setMenuOpen(false); }}
           onAbout={() => { setScreen("about"); setMenuOpen(false); }}
+          onBalanceHistory={() => { setScreen("balance"); setMenuOpen(false); }}
+          onCashback={() => { setScreen("cashback"); setMenuOpen(false); }}
         />
       )}
 

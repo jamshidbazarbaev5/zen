@@ -4,6 +4,7 @@ import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
 import { getCashbackInfo } from '../api';
 import { formatPrice } from '../utils/formatPrice';
+import CoffeeLoader from '../components/CoffeeLoader';
 import type { CashbackInfo } from '../types';
 
 interface Props {
@@ -41,14 +42,7 @@ const CashbackScreen = ({ onBack }: Props) => {
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{
-              background: "var(--bg-secondary)", borderRadius: 16, height: i === 1 ? 160 : 64,
-              animation: "pulse 1.5s ease-in-out infinite", opacity: 1 - i * 0.2,
-            }} />
-          ))}
-        </div>
+        <CoffeeLoader size={110} label={t('loadingText')} />
       ) : info ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingBottom: 100 }}>
           {/* Current tier card */}

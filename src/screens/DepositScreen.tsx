@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { styles } from "../styles";
 import { ArrowLeftIcon } from "../components/Icons";
 import { createDeposit } from "../api";
-import { openPaymentLink } from "../telegram";
+import { isTelegram } from "../telegram";
 import { formatPrice } from "../utils/formatPrice";
 
 interface Props {
@@ -32,7 +32,14 @@ const DepositScreen = ({ onBack, balance }: Props) => {
     try {
       const res = await createDeposit(numericAmount);
       if (res.payment_url) {
-        openPaymentLink(res.payment_url);
+        // Prefer Telegram openLink inside the WebApp; fall back to same-tab
+        // navigation for a reliable redirect in plain browsers.
+        const tg = window.Telegram?.WebApp;
+        if (isTelegram() && tg?.openLink) {
+          tg.openLink(res.payment_url);
+        } else {
+          window.location.href = res.payment_url;
+        }
       } else {
         setError(t("error"));
       }
