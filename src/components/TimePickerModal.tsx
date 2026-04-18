@@ -27,11 +27,12 @@ const inputStyle: React.CSSProperties = {
   fontSize: 15,
   padding: "12px 14px",
   borderRadius: 12,
-  border: "1px solid var(--border-color, #ddd)",
-  background: "var(--bg-primary, #fff)",
-  color: "var(--text-primary, #222)",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-primary)",
+  color: "var(--text-primary)",
   width: "100%",
   boxSizing: "border-box",
+  colorScheme: "light dark",
 };
 
 const toDateValue = (d: Date) => {
@@ -87,9 +88,9 @@ const TimePickerModal = ({
     flex: 1,
     padding: "11px 0",
     borderRadius: 10,
-    border: selected ? "1.5px solid var(--accent, #E86A33)" : "1px solid var(--border-color, #ddd)",
-    background: selected ? "var(--accent-light, rgba(232,106,51,0.12))" : "var(--bg-primary, #fff)",
-    color: selected ? "var(--accent, #E86A33)" : "var(--text-primary, #222)",
+    border: selected ? "1.5px solid var(--accent)" : "1px solid var(--border-color)",
+    background: selected ? "var(--accent-light)" : "var(--bg-primary)",
+    color: selected ? "var(--accent)" : "var(--text-primary)",
     fontSize: 13,
     fontWeight: selected ? 700 : 500,
     cursor: "pointer",
@@ -109,14 +110,16 @@ const TimePickerModal = ({
       onClick={onClose}
     >
       <div
+        className="time-picker-modal"
         style={{
-          background: "var(--card-bg, #fff)",
+          background: "var(--card-bg, var(--bg-primary))",
           borderRadius: 16,
           padding: 24,
           width: "90%",
           maxWidth: 360,
           maxHeight: "90vh",
           overflowY: "auto",
+          border: "1px solid var(--border-color)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -124,7 +127,7 @@ const TimePickerModal = ({
           style={{
             margin: "0 0 16px",
             fontSize: 18,
-            color: "var(--text-primary, #222)",
+            color: "var(--text-primary)",
             textAlign: "center",
           }}
         >
@@ -135,7 +138,7 @@ const TimePickerModal = ({
         <label
           style={{
             fontSize: 13,
-            color: "var(--text-secondary, #666)",
+            color: "var(--text-secondary)",
             marginBottom: 6,
             display: "block",
           }}
@@ -170,7 +173,7 @@ const TimePickerModal = ({
         <label
           style={{
             fontSize: 13,
-            color: "var(--text-secondary, #666)",
+            color: "var(--text-secondary)",
             marginBottom: 4,
             display: "block",
           }}
@@ -194,11 +197,11 @@ const TimePickerModal = ({
             padding: "12px 14px",
             borderRadius: 12,
             border: useBalance
-              ? "1.5px solid var(--accent, #E86A33)"
-              : "1px solid var(--border-color, #ddd)",
+              ? "1.5px solid var(--accent)"
+              : "1px solid var(--border-color)",
             background: useBalance
-              ? "var(--accent-light, rgba(232,106,51,0.08))"
-              : "var(--bg-secondary, #f5f5f5)",
+              ? "var(--accent-light)"
+              : "var(--bg-secondary)",
             cursor: hasBalance ? "pointer" : "not-allowed",
             marginBottom: 16,
             userSelect: "none",
@@ -210,7 +213,7 @@ const TimePickerModal = ({
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: "var(--text-primary, #222)",
+                color: "var(--text-primary)",
               }}
             >
               {t("payWithBalance")}
@@ -218,7 +221,7 @@ const TimePickerModal = ({
             <div
               style={{
                 fontSize: 12,
-                color: "var(--text-muted, #888)",
+                color: "var(--text-muted)",
                 marginTop: 2,
               }}
             >
@@ -234,7 +237,7 @@ const TimePickerModal = ({
               width: 20,
               height: 20,
               cursor: hasBalance ? "pointer" : "not-allowed",
-              accentColor: "var(--accent, #E86A33)",
+              accentColor: "var(--accent)",
             }}
           />
         </label>
@@ -246,7 +249,7 @@ const TimePickerModal = ({
                 <label
                   style={{
                     fontSize: 13,
-                    color: "var(--text-secondary, #666)",
+                    color: "var(--text-secondary)",
                     marginBottom: 4,
                     display: "block",
                   }}
@@ -264,7 +267,7 @@ const TimePickerModal = ({
                 <label
                   style={{
                     fontSize: 13,
-                    color: "var(--text-secondary, #666)",
+                    color: "var(--text-secondary)",
                     marginBottom: 4,
                     display: "block",
                   }}
@@ -282,7 +285,7 @@ const TimePickerModal = ({
                 <label
                   style={{
                     fontSize: 13,
-                    color: "var(--text-secondary, #666)",
+                    color: "var(--text-secondary)",
                     marginBottom: 4,
                     display: "block",
                   }}
@@ -300,7 +303,7 @@ const TimePickerModal = ({
             <label
               style={{
                 fontSize: 13,
-                color: "var(--text-secondary, #666)",
+                color: "var(--text-secondary)",
                 marginBottom: 4,
                 display: "block",
               }}
@@ -325,12 +328,14 @@ const TimePickerModal = ({
             width: "100%",
             padding: "14px 0",
             borderRadius: 12,
-            background: loading ? "#999" : "#E86A33",
+            background: "var(--accent)",
             color: "#fff",
             border: "none",
             fontSize: 16,
             fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.6 : 1,
+            transition: "opacity 0.2s",
           }}
         >
           {loading ? t("sending") : t("confirm")}
@@ -341,8 +346,9 @@ const TimePickerModal = ({
               marginTop: 12,
               padding: 10,
               borderRadius: 8,
-              background: "#fee",
-              color: "#c62828",
+              background: "var(--bg-secondary)",
+              color: "#e57373",
+              border: "1px solid var(--border-color)",
               fontSize: 12,
               textAlign: "left",
               wordBreak: "break-all",
@@ -351,6 +357,21 @@ const TimePickerModal = ({
             {error}
           </div>
         )}
+        <style>{`
+          .time-picker-modal input[type="date"],
+          .time-picker-modal input[type="time"] {
+            color-scheme: light dark;
+          }
+          [data-theme="dark"] .time-picker-modal input[type="date"]::-webkit-calendar-picker-indicator,
+          [data-theme="dark"] .time-picker-modal input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) opacity(0.8);
+          }
+          .time-picker-modal input::placeholder,
+          .time-picker-modal textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.8;
+          }
+        `}</style>
       </div>
     </div>
   );
