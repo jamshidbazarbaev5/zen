@@ -75,10 +75,11 @@ const NotificationsScreen = ({ onBack }: Props) => {
 
   const statusConfig: Record<string, { label: string; bg: string; color: string; darkBg: string; darkColor: string }> = {
     pending:    { label: t('pending'),    bg: "#fff3e0", color: "#e65100", darkBg: "#3d2e1a", darkColor: "#ffb74d" },
+    paid:       { label: t('paid'),       bg: "#e1f5fe", color: "#0277bd", darkBg: "#1a2a35", darkColor: "#4fc3f7" },
     confirmed:  { label: t('confirmed'),  bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
     preparing:  { label: t('preparing'),  bg: "#e3f2fd", color: "#1565c0", darkBg: "#1a2535", darkColor: "#64b5f6" },
     ready:      { label: t('ready'),      bg: "#e8f5e9", color: "#2e7d32", darkBg: "#1a3025", darkColor: "#66bb6a" },
-    delivered:  { label: t('delivered'),  bg: "#f1f8e9", color: "#558b2f", darkBg: "#1f2e1a", darkColor: "#aed581" },
+    completed:  { label: t('completed'),  bg: "#f1f8e9", color: "#558b2f", darkBg: "#1f2e1a", darkColor: "#aed581" },
     cancelled:  { label: t('cancelled'),  bg: "#fce4ec", color: "#c62828", darkBg: "#351a1f", darkColor: "#ef9a9a" },
   };
 
