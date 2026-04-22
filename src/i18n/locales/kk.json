@@ -130,6 +130,12 @@
   "date": "Sáne",
   "payWithBalance": "Balans arqalı tólew",
   "yourBalance": "Sizdiñ balansıńız",
+  "payWithCashback": "Keshbek menen tólew",
+  "payWithDeposit": "Depozit penen tólew",
+  "paidFromCashback": "Keshbekten",
+  "paidFromDeposit": "Depozitten",
+  "myQrCode": "Meniń QR kodim",
+  "showAtCheckout": "Kassada kórsetiń",
   "pickupDate": "Alıp ketiw sánesi",
   "deliveryDate": "Jetkerip beriw sánesi"
 }

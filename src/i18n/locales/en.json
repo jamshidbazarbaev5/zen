@@ -130,6 +130,12 @@
   "date": "Date",
   "payWithBalance": "Pay with balance",
   "yourBalance": "Your balance",
+  "payWithCashback": "Pay with cashback",
+  "payWithDeposit": "Pay with deposit",
+  "paidFromCashback": "From cashback",
+  "paidFromDeposit": "From deposit",
+  "myQrCode": "My QR code",
+  "showAtCheckout": "Show this at checkout",
   "pickupDate": "Pickup date",
   "deliveryDate": "Delivery date"
 }

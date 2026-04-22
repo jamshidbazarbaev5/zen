@@ -13,14 +13,16 @@ interface Props {
   onConfirm: (
     date: string,
     time: string,
-    useBalance: boolean,
+    useCashback: boolean,
+    useDeposit: boolean,
     delivery?: DeliveryDetails,
   ) => void;
   onClose: () => void;
   loading?: boolean;
   error?: string | null;
   isDelivery?: boolean;
-  balance?: string | null;
+  cashbackBalance?: string | null;
+  depositBalance?: string | null;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -48,7 +50,8 @@ const TimePickerModal = ({
   loading,
   error,
   isDelivery,
-  balance,
+  cashbackBalance,
+  depositBalance,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -66,7 +69,8 @@ const TimePickerModal = ({
 
   const [date, setDate] = useState(todayStr);
   const [time, setTime] = useState(defaultTime);
-  const [useBalance, setUseBalance] = useState(false);
+  const [useCashback, setUseCashback] = useState(false);
+  const [useDeposit, setUseDeposit] = useState(false);
   const [flat, setFlat] = useState("");
   const [entrance, setEntrance] = useState("");
   const [floor, setFloor] = useState("");
@@ -76,13 +80,16 @@ const TimePickerModal = ({
     onConfirm(
       date,
       time,
-      useBalance,
+      useCashback,
+      useDeposit,
       isDelivery ? { flat, entrance, floor, comment } : undefined,
     );
   };
 
-  const balanceNum = balance != null ? Number(balance) : 0;
-  const hasBalance = balanceNum > 0;
+  const cashbackNum = cashbackBalance != null ? Number(cashbackBalance) : 0;
+  const depositNum = depositBalance != null ? Number(depositBalance) : 0;
+  const hasCashback = cashbackNum > 0;
+  const hasDeposit = depositNum > 0;
 
   const dateBtnStyle = (selected: boolean): React.CSSProperties => ({
     flex: 1,
@@ -187,7 +194,7 @@ const TimePickerModal = ({
           style={{ ...inputStyle, fontSize: 20, textAlign: "center", marginBottom: 16 }}
         />
 
-        {/* Use balance */}
+        {/* Use cashback */}
         <label
           style={{
             display: "flex",
@@ -196,16 +203,16 @@ const TimePickerModal = ({
             gap: 12,
             padding: "12px 14px",
             borderRadius: 12,
-            border: useBalance
+            border: useCashback
               ? "1.5px solid var(--accent)"
               : "1px solid var(--border-color)",
-            background: useBalance
+            background: useCashback
               ? "var(--accent-light)"
               : "var(--bg-secondary)",
-            cursor: hasBalance ? "pointer" : "not-allowed",
-            marginBottom: 16,
+            cursor: hasCashback ? "pointer" : "not-allowed",
+            marginBottom: 10,
             userSelect: "none",
-            opacity: hasBalance ? 1 : 0.6,
+            opacity: hasCashback ? 1 : 0.6,
           }}
         >
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -216,7 +223,7 @@ const TimePickerModal = ({
                 color: "var(--text-primary)",
               }}
             >
-              {t("payWithBalance")}
+              {t("payWithCashback")}
             </div>
             <div
               style={{
@@ -225,18 +232,73 @@ const TimePickerModal = ({
                 marginTop: 2,
               }}
             >
-              {t("yourBalance")}: {formatPrice(balanceNum)} {t("som")}
+              {formatPrice(cashbackNum)} {t("som")}
             </div>
           </div>
           <input
             type="checkbox"
-            checked={useBalance}
-            disabled={!hasBalance}
-            onChange={(e) => setUseBalance(e.target.checked)}
+            checked={useCashback}
+            disabled={!hasCashback}
+            onChange={(e) => setUseCashback(e.target.checked)}
             style={{
               width: 20,
               height: 20,
-              cursor: hasBalance ? "pointer" : "not-allowed",
+              cursor: hasCashback ? "pointer" : "not-allowed",
+              accentColor: "var(--accent)",
+            }}
+          />
+        </label>
+
+        {/* Use deposit */}
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "12px 14px",
+            borderRadius: 12,
+            border: useDeposit
+              ? "1.5px solid var(--accent)"
+              : "1px solid var(--border-color)",
+            background: useDeposit
+              ? "var(--accent-light)"
+              : "var(--bg-secondary)",
+            cursor: hasDeposit ? "pointer" : "not-allowed",
+            marginBottom: 16,
+            userSelect: "none",
+            opacity: hasDeposit ? 1 : 0.6,
+          }}
+        >
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--text-primary)",
+              }}
+            >
+              {t("payWithDeposit")}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--text-muted)",
+                marginTop: 2,
+              }}
+            >
+              {formatPrice(depositNum)} {t("som")}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            checked={useDeposit}
+            disabled={!hasDeposit}
+            onChange={(e) => setUseDeposit(e.target.checked)}
+            style={{
+              width: 20,
+              height: 20,
+              cursor: hasDeposit ? "pointer" : "not-allowed",
               accentColor: "var(--accent)",
             }}
           />

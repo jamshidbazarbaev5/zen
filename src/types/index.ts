@@ -114,6 +114,7 @@ export interface CustomerProfile {
   balance: string;
   total_spent: string;
   is_active: boolean;
+  qr_payload?: string;
 }
 export type DeliveryMode = "delivery" | "pickup";
 
@@ -131,7 +132,8 @@ export interface CreateOrderItem {
 export interface CreateOrderRequest {
   pickup_time: string;
   total_amount: string;
-  use_balance: boolean;
+  use_cashback: boolean;
+  use_deposit: boolean;
   order_type: "delivery" | "pickup";
   items: CreateOrderItem[];
   pickup_location_id?: number;
@@ -174,7 +176,8 @@ export interface OrderListItem {
   delivery_latitude: number | null;
   delivery_longitude: number | null;
   total_amount: string;
-  balance_used: string;
+  cashback_used: string;
+  deposit_used: string;
   online_paid: string;
   pickup_time: string;
   items: OrderItemResponse[];

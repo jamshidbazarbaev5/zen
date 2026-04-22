@@ -3,6 +3,7 @@ import { SearchIcon } from '../components/Icons';
 import type { Product } from '../types';
 import { formatPrice } from '../utils/formatPrice';
 import { useTranslation } from 'react-i18next';
+import QrCodeCard from '../components/QrCodeCard';
 
 interface Props {
   activeCategory: string;
@@ -15,6 +16,7 @@ interface Props {
   addToCart: (id: number) => void;
   removeFromCart: (id: number) => void;
   onProductSelect: (product: Product) => void;
+  qrPayload?: string | null;
 }
 
 const HomeScreen = ({
@@ -28,11 +30,14 @@ const HomeScreen = ({
   addToCart,
   removeFromCart,
   onProductSelect,
+  qrPayload,
 }: Props) => {
   const { t } = useTranslation();
-  
+
   return (
   <>
+    {qrPayload && <QrCodeCard payload={qrPayload} />}
+
     <div style={styles.searchBox} className="search-box">
       <SearchIcon />
       <input

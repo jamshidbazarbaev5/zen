@@ -260,7 +260,8 @@ const Index = () => {
   const handleOrderSubmit = async (
     date: string,
     time: string,
-    useBalance: boolean,
+    useCashback: boolean,
+    useDeposit: boolean,
     delivery?: DeliveryDetails,
   ) => {
     setOrderLoading(true);
@@ -277,7 +278,8 @@ const Index = () => {
       const payload: CreateOrderRequest = {
         pickup_time: `${date}T${time}:00+05:00`,
         total_amount: totalPrice.toFixed(2),
-        use_balance: useBalance,
+        use_cashback: useCashback,
+        use_deposit: useDeposit,
         order_type: deliveryMode,
         items,
         ...(deliveryMode === "pickup" && selectedBranch ? {
@@ -383,6 +385,7 @@ const Index = () => {
               addToCart={addToCart}
               removeFromCart={removeFromCart}
               onProductSelect={setSelectedProduct}
+              qrPayload={user?.qr_payload ?? null}
             />
           )}
 
@@ -616,7 +619,8 @@ const Index = () => {
           loading={orderLoading}
           error={orderError}
           isDelivery={deliveryMode === "delivery"}
-          balance={user?.balance ?? null}
+          cashbackBalance={user?.balance ?? null}
+          depositBalance={user?.balance ?? null}
         />
       )}
 

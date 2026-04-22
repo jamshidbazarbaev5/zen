@@ -269,8 +269,11 @@ const NotificationsScreen = ({ onBack }: Props) => {
 
                     {/* Payment summary */}
                     <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 0 }}>
-                      {Number(order.balance_used) > 0 && (
-                        <DetailRow label={t('paidFromBalance')} value={`${formatPrice(Number(order.balance_used))} ${t('som')}`} />
+                      {Number(order.cashback_used) > 0 && (
+                        <DetailRow label={t('paidFromCashback')} value={`${formatPrice(Number(order.cashback_used))} ${t('som')}`} />
+                      )}
+                      {Number(order.deposit_used) > 0 && (
+                        <DetailRow label={t('paidFromDeposit')} value={`${formatPrice(Number(order.deposit_used))} ${t('som')}`} />
                       )}
                       <div style={{
                         display: "flex", justifyContent: "space-between", alignItems: "center",

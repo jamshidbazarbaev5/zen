@@ -130,6 +130,12 @@
   "date": "Дата",
   "payWithBalance": "Оплатить с баланса",
   "yourBalance": "Ваш баланс",
+  "payWithCashback": "Оплатить кэшбэком",
+  "payWithDeposit": "Оплатить с депозита",
+  "paidFromCashback": "С кэшбэка",
+  "paidFromDeposit": "С депозита",
+  "myQrCode": "Мой QR-код",
+  "showAtCheckout": "Покажите на кассе",
   "pickupDate": "Дата получения",
   "deliveryDate": "Дата доставки"
 }

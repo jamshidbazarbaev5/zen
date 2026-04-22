@@ -130,6 +130,12 @@
   "date": "Sana",
   "payWithBalance": "Balansdan to'lash",
   "yourBalance": "Sizning balansingiz",
+  "payWithCashback": "Keshbek bilan to'lash",
+  "payWithDeposit": "Depozit bilan to'lash",
+  "paidFromCashback": "Keshbekdan",
+  "paidFromDeposit": "Depozitdan",
+  "myQrCode": "Mening QR kodim",
+  "showAtCheckout": "Kassada ko'rsating",
   "pickupDate": "Olib ketish sanasi",
   "deliveryDate": "Yetkazib berish sanasi"
 }
