@@ -28,6 +28,13 @@ const CashbackScreen = ({ onBack }: Props) => {
     return Math.min(100, Number(info.next_tier.progress_percent) || 0);
   };
 
+  // Format percent: "1.00" -> "1", "2.50" -> "2.5"
+  const fmtPct = (v: string | number): string => {
+    const n = Number(v);
+    if (Number.isNaN(n)) return String(v);
+    return (Math.round(n * 100) / 100).toString();
+  };
+
   return (
     <div style={{ padding: "0 16px", minHeight: "80vh" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0 20px" }}>
@@ -62,7 +69,7 @@ const CashbackScreen = ({ onBack }: Props) => {
               {info.current_tier.name}
             </div>
             <div style={{ fontSize: 36, fontWeight: 800, marginBottom: 16, letterSpacing: -1 }}>
-              {info.current_tier.percent}%
+              {fmtPct(info.current_tier.percent)}%
             </div>
 
             <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 6 }}>
@@ -106,7 +113,7 @@ const CashbackScreen = ({ onBack }: Props) => {
               <div style={{
                 fontSize: 24, fontWeight: 800, color: "var(--accent)",
               }}>
-                {info.next_tier.percent}%
+                {fmtPct(info.next_tier.percent)}%
               </div>
             </div>
           )}
@@ -142,7 +149,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                         fontSize: 14, fontWeight: 700,
                         color: isCurrent ? "#fff" : "var(--accent)",
                       }}>
-                        {tier.percent}%
+                        {fmtPct(tier.percent)}%
                       </div>
                       <div>
                         <div style={{ fontSize: 15, fontWeight: 600 }}>{tier.name}</div>
@@ -150,7 +157,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                           fontSize: 12,
                           color: isCurrent ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
                         }}>
-                          {Number(tier.min_spent) === 0 ? t('initial') : `${formatPrice(Number(tier.min_spent))} ${t('som')} ${t('from')}`}
+                          {Number(tier.min_spent) === 0 ? t('initial') : `${t('from')} ${formatPrice(Number(tier.min_spent))} ${t('som')}`}
                         </div>
                       </div>
                     </div>
