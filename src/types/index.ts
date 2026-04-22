@@ -112,6 +112,7 @@ export interface CustomerProfile {
   phone: string;
   lang: string;
   balance: string;
+  deposit_balance: string;
   total_spent: string;
   is_active: boolean;
   qr_payload?: string;

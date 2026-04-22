@@ -417,7 +417,7 @@ const Index = () => {
           {screen === "deposit" && (
             <DepositScreen
               onBack={() => setScreen("balance")}
-              balance={user?.balance ?? null}
+              balance={user?.deposit_balance ?? null}
             />
           )}
 
@@ -620,7 +620,7 @@ const Index = () => {
           error={orderError}
           isDelivery={deliveryMode === "delivery"}
           cashbackBalance={user?.balance ?? null}
-          depositBalance={user?.balance ?? null}
+          depositBalance={user?.deposit_balance ?? null}
         />
       )}
 
