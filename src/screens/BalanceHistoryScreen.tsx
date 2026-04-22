@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { styles } from "../styles";
 import { ArrowLeftIcon } from "../components/Icons";
 import { getBalanceHistory } from "../api";
+import { useUser } from "../context/UserContext";
 import { formatPrice } from "../utils/formatPrice";
 import CoffeeLoader from "../components/CoffeeLoader";
 import type { BalanceHistory, BalanceTransaction } from "../types";
@@ -35,6 +36,7 @@ const formatDate = (iso: string, locale: string): string => {
 
 const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
   const { t, i18n } = useTranslation();
+  const { user } = useUser();
   const [history, setHistory] = useState<BalanceHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,7 +119,7 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
               }}
             />
             <div style={{ fontSize: 13, opacity: 0.8, fontWeight: 500, marginBottom: 6 }}>
-              {t("currentBalance")}
+              {t("depositBalance")}
             </div>
             <div
               style={{
@@ -127,7 +129,7 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
                 marginBottom: 14,
               }}
             >
-              {formatPrice(Number(history.balance))} {t("som")}
+              {formatPrice(Number(user?.deposit_balance ?? history.balance))} {t("som")}
             </div>
             <button
               onClick={onTopUp}
