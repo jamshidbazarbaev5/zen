@@ -86,7 +86,7 @@ const DepositScreen = ({ onBack, balance }: Props) => {
             }}
           >
             <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>
-              {t("currentBalance")}
+              {t("depositBalance")}
             </span>
             <span
               style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}

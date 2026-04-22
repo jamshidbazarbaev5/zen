@@ -146,6 +146,11 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, onBalanceHistory }: Props
               accent
               onClick={onBalanceHistory}
             />
+            <InfoRow
+              label={t('depositBalance')}
+              value={`${formatPrice(Number(profile.deposit_balance))} ${t('som')}`}
+              accent
+            />
             <InfoRow label={t('totalSpent')} value={`${formatPrice(Number(profile.total_spent))} ${t('som')}`} />
             <InfoRow
               label={t('language')}
