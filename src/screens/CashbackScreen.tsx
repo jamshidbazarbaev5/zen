@@ -25,11 +25,7 @@ const CashbackScreen = ({ onBack }: Props) => {
 
   const getProgress = () => {
     if (!info || !info.next_tier) return 100;
-    const spent = Number(info.total_spent);
-    const currentMin = Number(info.current_tier.min_spent);
-    const nextMin = Number(info.next_tier.min_spent);
-    if (nextMin <= currentMin) return 100;
-    return Math.min(100, ((spent - currentMin) / (nextMin - currentMin)) * 100);
+    return Math.min(100, Number(info.next_tier.progress_percent) || 0);
   };
 
   return (
@@ -70,7 +66,7 @@ const CashbackScreen = ({ onBack }: Props) => {
             </div>
 
             <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 6 }}>
-              {t('totalSpent')}: {formatPrice(Number(info.total_spent))} {t('som')}
+              {t('totalSpent')}: {formatPrice(Number(info.lifetime_spend))} {t('som')}
             </div>
 
             {info.next_tier && (
@@ -86,7 +82,7 @@ const CashbackScreen = ({ onBack }: Props) => {
                   }} />
                 </div>
                 <div style={{ fontSize: 12, opacity: 0.7 }}>
-                  {info.next_tier.name} {t('remaining')} {formatPrice(Number(info.next_tier.remaining))} {t('som')}
+                  {info.next_tier.name} {t('remaining')} {formatPrice(Number(info.next_tier.spend_needed))} {t('som')}
                 </div>
               </>
             )}
@@ -124,7 +120,7 @@ const CashbackScreen = ({ onBack }: Props) => {
               {t('allTiers')}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {info.tiers.map((tier, i) => {
+              {info.all_tiers.map((tier, i) => {
                 const isCurrent = tier.name === info.current_tier.name;
                 return (
                   <div

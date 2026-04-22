@@ -71,17 +71,21 @@ export interface CashbackTier {
   name: string;
   percent: string;
   min_spent: string;
+  max_spent?: string | null;
 }
 
 export interface CashbackNextTier extends CashbackTier {
-  remaining: string;
+  spend_needed: string;
+  progress_percent: number;
 }
 
 export interface CashbackInfo {
-  total_spent: string;
+  balance: string;
+  deposit_balance: string;
+  lifetime_spend: string;
   current_tier: CashbackTier;
   next_tier: CashbackNextTier | null;
-  tiers: CashbackTier[];
+  all_tiers: CashbackTier[];
 }
 
 export type BalanceTxType = "deposit" | "cashback" | "spend" | string;
