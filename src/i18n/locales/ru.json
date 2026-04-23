@@ -119,6 +119,7 @@
   "txDeposit": "Пополнение",
   "txCashback": "Кэшбэк",
   "txSpend": "Списание",
+  "txOther": "Прочее",
   "topUp": "Пополнить",
   "topUpBalance": "Пополнить баланс",
   "depositAmount": "Сумма пополнения",

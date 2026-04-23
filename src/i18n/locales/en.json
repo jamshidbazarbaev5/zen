@@ -119,6 +119,7 @@
   "txDeposit": "Top-up",
   "txCashback": "Cashback",
   "txSpend": "Spent",
+  "txOther": "Other",
   "topUp": "Top up",
   "topUpBalance": "Top up balance",
   "depositAmount": "Amount to top up",

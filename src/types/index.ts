@@ -93,8 +93,10 @@ export type BalanceTxType =
   | "deposit_topup"
   | "deposit_spend"
   | "cashback"
+  | "cashback_earned"
   | "cashback_spend"
   | "spend"
+  | "other"
   | string;
 
 export interface BalanceTransaction {

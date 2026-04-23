@@ -20,7 +20,8 @@ const txIsNegative = (tx: BalanceTransaction): boolean => {
 const txColor = (tx: BalanceTransaction): string => {
   if (txIsNegative(tx)) return "#e53935";
   if (tx.tx_type === "deposit" || tx.tx_type === "deposit_topup") return "var(--accent)";
-  return "#2e7d32"; // cashback
+  if (tx.tx_type === "other") return "var(--text-primary)";
+  return "#2e7d32"; // cashback / cashback_earned
 };
 
 const formatDate = (iso: string, locale: string): string => {
@@ -58,11 +59,14 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
       case "deposit_topup":
         return t("txDeposit");
       case "cashback":
+      case "cashback_earned":
         return t("txCashback");
       case "spend":
       case "deposit_spend":
       case "cashback_spend":
         return t("txSpend");
+      case "other":
+        return t("txOther");
       default:
         return tx.tx_type;
     }
