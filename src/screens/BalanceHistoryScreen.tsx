@@ -14,14 +14,14 @@ interface Props {
 
 const txIsNegative = (tx: BalanceTransaction): boolean => {
   if (Number(tx.amount) < 0) return true;
-  return tx.tx_type === "spend" || tx.tx_type === "deposit_spend" || tx.tx_type === "cashback_spend";
+  return tx.tx_type === "deposit_spent" || tx.tx_type === "cashback_spent";
 };
 
 const txColor = (tx: BalanceTransaction): string => {
   if (txIsNegative(tx)) return "#e53935";
-  if (tx.tx_type === "deposit" || tx.tx_type === "deposit_topup") return "var(--accent)";
+  if (tx.tx_type === "deposit_topup") return "var(--accent)";
   if (tx.tx_type === "other") return "var(--text-primary)";
-  return "#2e7d32"; // cashback / cashback_earned
+  return "#2e7d32"; // cashback_earned
 };
 
 const formatDate = (iso: string, locale: string): string => {
@@ -53,22 +53,19 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
   }, []);
 
   const txLabel = (tx: BalanceTransaction): string => {
-    if (tx.tx_type_display) return tx.tx_type_display;
     switch (tx.tx_type) {
-      case "deposit":
-      case "deposit_topup":
-        return t("txDeposit");
-      case "cashback":
       case "cashback_earned":
-        return t("txCashback");
-      case "spend":
-      case "deposit_spend":
-      case "cashback_spend":
-        return t("txSpend");
+        return t("txCashbackEarned");
+      case "cashback_spent":
+        return t("txCashbackSpent");
+      case "deposit_topup":
+        return t("txDepositTopup");
+      case "deposit_spent":
+        return t("txDepositSpent");
       case "other":
         return t("txOther");
       default:
-        return tx.tx_type;
+        return tx.tx_type_display || tx.tx_type;
     }
   };
 

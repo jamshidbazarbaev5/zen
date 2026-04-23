@@ -23,6 +23,7 @@ interface Props {
   isDelivery?: boolean;
   cashbackBalance?: string | null;
   depositBalance?: string | null;
+  orderTotal?: number;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -52,6 +53,7 @@ const TimePickerModal = ({
   isDelivery,
   cashbackBalance,
   depositBalance,
+  orderTotal = 0,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -90,6 +92,12 @@ const TimePickerModal = ({
   const depositNum = depositBalance != null ? Number(depositBalance) : 0;
   const hasCashback = cashbackNum > 0;
   const hasDeposit = depositNum > 0;
+
+  // Cashback is applied first, then deposit on the remainder.
+  const cashbackApplied = useCashback ? Math.min(cashbackNum, orderTotal) : 0;
+  const afterCashback = Math.max(0, orderTotal - cashbackApplied);
+  const depositApplied = useDeposit ? Math.min(depositNum, afterCashback) : 0;
+  const remainingToPay = Math.max(0, afterCashback - depositApplied);
 
   const dateBtnStyle = (selected: boolean): React.CSSProperties => ({
     flex: 1,
@@ -382,6 +390,75 @@ const TimePickerModal = ({
           </>
         )}
 
+        {/* Payment summary */}
+        {orderTotal > 0 && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "12px 14px",
+              borderRadius: 12,
+              background: "var(--bg-secondary)",
+              border: "1px solid var(--border-color)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
+            }}
+          >
+            <SummaryRow
+              label={t("orderValue")}
+              value={`${formatPrice(orderTotal)} ${t("som")}`}
+              muted
+            />
+            {cashbackApplied > 0 && (
+              <SummaryRow
+                label={t("paidFromCashback")}
+                value={`-${formatPrice(cashbackApplied)} ${t("som")}`}
+                color="#2e7d32"
+              />
+            )}
+            {depositApplied > 0 && (
+              <SummaryRow
+                label={t("paidFromDeposit")}
+                value={`-${formatPrice(depositApplied)} ${t("som")}`}
+                color="var(--accent)"
+              />
+            )}
+            <div
+              style={{
+                height: 1,
+                background: "var(--border-color)",
+                margin: "2px 0",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                }}
+              >
+                {t("totalPayment")}
+              </span>
+              <span
+                style={{
+                  fontSize: 17,
+                  fontWeight: 800,
+                  color: "var(--accent)",
+                }}
+              >
+                {formatPrice(remainingToPay)} {t("som")}
+              </span>
+            </div>
+          </div>
+        )}
+
         <button
           disabled={loading}
           onClick={handleConfirm}
@@ -438,5 +515,43 @@ const TimePickerModal = ({
     </div>
   );
 };
+
+const SummaryRow = ({
+  label,
+  value,
+  muted,
+  color,
+}: {
+  label: string;
+  value: string;
+  muted?: boolean;
+  color?: string;
+}) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      fontSize: 13,
+    }}
+  >
+    <span
+      style={{
+        color: muted ? "var(--text-muted)" : "var(--text-secondary)",
+        fontWeight: 500,
+      }}
+    >
+      {label}
+    </span>
+    <span
+      style={{
+        color: color || "var(--text-primary)",
+        fontWeight: 600,
+      }}
+    >
+      {value}
+    </span>
+  </div>
+);
 
 export default TimePickerModal;

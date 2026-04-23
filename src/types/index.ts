@@ -89,13 +89,10 @@ export interface CashbackInfo {
 }
 
 export type BalanceTxType =
-  | "deposit"
-  | "deposit_topup"
-  | "deposit_spend"
-  | "cashback"
   | "cashback_earned"
-  | "cashback_spend"
-  | "spend"
+  | "cashback_spent"
+  | "deposit_topup"
+  | "deposit_spent"
   | "other"
   | string;
 

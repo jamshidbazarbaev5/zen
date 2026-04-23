@@ -622,6 +622,7 @@ const Index = () => {
           isDelivery={deliveryMode === "delivery"}
           cashbackBalance={user?.balance ?? null}
           depositBalance={user?.deposit_balance ?? null}
+          orderTotal={totalPrice}
         />
       )}
 
