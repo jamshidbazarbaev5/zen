@@ -385,7 +385,6 @@ const Index = () => {
               addToCart={addToCart}
               removeFromCart={removeFromCart}
               onProductSelect={setSelectedProduct}
-              qrPayload={user?.qr_payload ?? null}
             />
           )}
 
@@ -550,6 +549,8 @@ const Index = () => {
         <MenuSidebar
           selectedLanguage={selectedLanguage}
           theme={theme}
+          qrPayload={user?.qr_payload ?? null}
+          userName={user?.name ?? null}
           onClose={() => setMenuOpen(false)}
           onBranchOpen={() => setBranchModalOpen(true)}
           onLanguageOpen={() => setLanguageModalOpen(true)}

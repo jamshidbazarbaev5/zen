@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { styles } from "../styles";
 import { ArrowLeftIcon } from "../components/Icons";
 import { getBalanceHistory } from "../api";
-import { useUser } from "../context/UserContext";
 import { formatPrice } from "../utils/formatPrice";
 import CoffeeLoader from "../components/CoffeeLoader";
 import type { BalanceHistory, BalanceTransaction } from "../types";
@@ -13,9 +12,14 @@ interface Props {
   onTopUp: () => void;
 }
 
+const txIsNegative = (tx: BalanceTransaction): boolean => {
+  if (Number(tx.amount) < 0) return true;
+  return tx.tx_type === "spend" || tx.tx_type === "deposit_spend" || tx.tx_type === "cashback_spend";
+};
+
 const txColor = (tx: BalanceTransaction): string => {
-  if (tx.tx_type === "spend") return "#e53935";
-  if (tx.tx_type === "deposit") return "var(--accent)";
+  if (txIsNegative(tx)) return "#e53935";
+  if (tx.tx_type === "deposit" || tx.tx_type === "deposit_topup") return "var(--accent)";
   return "#2e7d32"; // cashback
 };
 
@@ -36,7 +40,6 @@ const formatDate = (iso: string, locale: string): string => {
 
 const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
   const { t, i18n } = useTranslation();
-  const { user } = useUser();
   const [history, setHistory] = useState<BalanceHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,12 +52,16 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
   }, []);
 
   const txLabel = (tx: BalanceTransaction): string => {
+    if (tx.tx_type_display) return tx.tx_type_display;
     switch (tx.tx_type) {
       case "deposit":
+      case "deposit_topup":
         return t("txDeposit");
       case "cashback":
         return t("txCashback");
       case "spend":
+      case "deposit_spend":
+      case "cashback_spend":
         return t("txSpend");
       default:
         return tx.tx_type;
@@ -96,56 +103,124 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
         </div>
       ) : history ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingBottom: 100 }}>
-          {/* Balance card */}
-          <div
-            style={{
-              background: "var(--accent)",
-              borderRadius: 20,
-              padding: "22px 20px",
-              color: "#fff",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
+          {/* Balance cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {/* Cashback card */}
             <div
               style={{
-                position: "absolute",
-                top: -30,
-                right: -30,
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.08)",
-              }}
-            />
-            <div style={{ fontSize: 13, opacity: 0.8, fontWeight: 500, marginBottom: 6 }}>
-              {t("depositBalance")}
-            </div>
-            <div
-              style={{
-                fontSize: 34,
-                fontWeight: 800,
-                letterSpacing: -1,
-                marginBottom: 14,
-              }}
-            >
-              {formatPrice(Number(user?.deposit_balance ?? history.balance))} {t("som")}
-            </div>
-            <button
-              onClick={onTopUp}
-              style={{
-                background: "rgba(255,255,255,0.18)",
-                border: "1px solid rgba(255,255,255,0.3)",
+                background: "linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)",
+                borderRadius: 18,
+                padding: "16px 14px",
                 color: "#fff",
-                borderRadius: 10,
-                padding: "10px 18px",
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
+                position: "relative",
+                overflow: "hidden",
+                minHeight: 118,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              + {t("topUp")}
-            </button>
+              <div
+                style={{
+                  position: "absolute",
+                  top: -24,
+                  right: -24,
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.1)",
+                }}
+              />
+              <div
+                style={{
+                  fontSize: 11,
+                  opacity: 0.85,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.8,
+                }}
+              >
+                {t("cashback")}
+              </div>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  letterSpacing: -0.5,
+                  lineHeight: 1.1,
+                }}
+              >
+                {formatPrice(Number(history.balance))}{" "}
+                <span style={{ fontSize: 12, fontWeight: 500, opacity: 0.85 }}>{t("som")}</span>
+              </div>
+            </div>
+
+            {/* Deposit card */}
+            <div
+              style={{
+                background: "var(--accent)",
+                borderRadius: 18,
+                padding: "16px 14px",
+                color: "#fff",
+                position: "relative",
+                overflow: "hidden",
+                minHeight: 118,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: -24,
+                  right: -24,
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.1)",
+                }}
+              />
+              <div
+                style={{
+                  fontSize: 11,
+                  opacity: 0.85,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.8,
+                }}
+              >
+                {t("depositBalance")}
+              </div>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  letterSpacing: -0.5,
+                  lineHeight: 1.1,
+                }}
+              >
+                {formatPrice(Number(history.deposit_balance))}{" "}
+                <span style={{ fontSize: 12, fontWeight: 500, opacity: 0.85 }}>{t("som")}</span>
+              </div>
+              <button
+                onClick={onTopUp}
+                style={{
+                  alignSelf: "flex-start",
+                  background: "rgba(255,255,255,0.18)",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  color: "#fff",
+                  borderRadius: 8,
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  marginTop: 4,
+                }}
+              >
+                + {t("topUp")}
+              </button>
+            </div>
           </div>
 
           {/* Transactions */}
@@ -166,8 +241,8 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {history.transactions.map((tx) => {
                 const amount = Number(tx.amount);
-                const isNegative = amount < 0 || tx.tx_type === "spend";
-                const sign = isNegative ? "" : "+";
+                const isNegative = txIsNegative(tx);
+                const sign = isNegative ? "-" : "+";
                 return (
                   <div
                     key={tx.id}

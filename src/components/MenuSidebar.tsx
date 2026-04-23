@@ -3,10 +3,13 @@ import { styles } from '../styles';
 import { CloseIcon, GlobeIcon, PaletteIcon } from './Icons';
 import { MENU_ITEMS } from '../data/menuItems';
 import { LANGUAGES } from '../data/constants';
+import QrCodeCard from './QrCodeCard';
 
 interface Props {
   selectedLanguage: string;
   theme: "light" | "dark";
+  qrPayload?: string | null;
+  userName?: string | null;
   onClose: () => void;
   onBranchOpen: () => void;
   onLanguageOpen: () => void;
@@ -18,7 +21,7 @@ interface Props {
   onCashback: () => void;
 }
 
-const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications, onContact, onAbout, onBalanceHistory, onCashback }: Props) => {
+const MenuSidebar = ({ selectedLanguage, theme, qrPayload, userName, onClose, onBranchOpen, onLanguageOpen, onToggleTheme, onNotifications, onContact, onAbout, onBalanceHistory, onCashback }: Props) => {
   const { t } = useTranslation();
   
   return (
@@ -28,6 +31,13 @@ const MenuSidebar = ({ selectedLanguage, theme, onClose, onBranchOpen, onLanguag
         <h2 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "var(--text-primary, #222)" }}>{t('menu')}</h2>
         <button style={styles.menuCloseBtn} onClick={onClose}><CloseIcon /></button>
       </div>
+
+      {qrPayload && (
+        <div style={{ padding: "0 12px" }}>
+          <QrCodeCard payload={qrPayload} userName={userName} />
+        </div>
+      )}
+
       <div style={styles.menuList}>
         {MENU_ITEMS.map((item, i) => (
           <div key={i}>

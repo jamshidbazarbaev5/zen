@@ -88,19 +88,34 @@ export interface CashbackInfo {
   all_tiers: CashbackTier[];
 }
 
-export type BalanceTxType = "deposit" | "cashback" | "spend" | string;
+export type BalanceTxType =
+  | "deposit"
+  | "deposit_topup"
+  | "deposit_spend"
+  | "cashback"
+  | "cashback_spend"
+  | "spend"
+  | string;
 
 export interface BalanceTransaction {
   id: number;
   amount: string;
   tx_type: BalanceTxType;
+  tx_type_display?: string;
+  channel?: string;
+  channel_display?: string;
+  balance_after?: string;
   order_number: string | null;
+  iiko_order_number?: string | null;
+  order_sum?: string | null;
+  tier_at_time?: string;
   note: string;
   created_at: string;
 }
 
 export interface BalanceHistory {
   balance: string;
+  deposit_balance: string;
   transactions: BalanceTransaction[];
 }
 
