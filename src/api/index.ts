@@ -3,18 +3,6 @@ import type { MenuCategory, CreateOrderRequest, CreateOrderResponse, OrderListIt
 
 const api = axios.create({
   baseURL: "https://zen-coffee.uz/api",
-  headers: {
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    Pragma: "no-cache",
-    Expires: "0",
-  },
-});
-
-api.interceptors.request.use((config) => {
-  if ((config.method || "get").toLowerCase() === "get") {
-    config.params = { ...(config.params || {}), _ts: Date.now() };
-  }
-  return config;
 });
 
 // Restore token from localStorage on load
