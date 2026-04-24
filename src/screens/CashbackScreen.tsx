@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
 import { getCashbackInfo } from '../api';
+import { subscribe } from '../ws/customerSocket';
 import { formatPrice } from '../utils/formatPrice';
 import CoffeeLoader from '../components/CoffeeLoader';
 import type { CashbackInfo } from '../types';
@@ -16,12 +17,18 @@ const CashbackScreen = ({ onBack }: Props) => {
   const [info, setInfo] = useState<CashbackInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchInfo = useCallback(() => {
     getCashbackInfo()
       .then(setInfo)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchInfo();
+  }, [fetchInfo]);
+
+  useEffect(() => subscribe('balance_updated', fetchInfo), [fetchInfo]);
 
   const getProgress = () => {
     if (!info || !info.next_tier) return 100;

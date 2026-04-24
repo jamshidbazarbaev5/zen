@@ -8,6 +8,7 @@ import type { Product, MenuCategory, Screen, DeliveryMode, Cart, CartEntry, Pick
 import { getMenu, authenticateTelegram, authenticateTelegramLogin, createOrder, getBusinessInfo, getProductDetail } from './api';
 import type { TelegramLoginData } from './api';
 import { isTelegram, getInitData, getPhotoUrl, openPaymentLink } from './telegram';
+import { startCustomerSocket, stopCustomerSocket } from './ws/customerSocket';
 import TelegramLoginButton from './components/TelegramLoginButton';
 import TimePickerModal, { type DeliveryDetails } from './components/TimePickerModal';
 import type { CreateOrderRequest } from './types';
@@ -80,6 +81,13 @@ const Index = () => {
     }
     return "light";
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      startCustomerSocket();
+      return () => stopCustomerSocket();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (user?.lang && selectedLanguage !== user.lang) {

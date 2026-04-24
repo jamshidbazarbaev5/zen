@@ -97,8 +97,12 @@ export const getCashbackInfo = async (): Promise<CashbackInfo> => {
   return data;
 };
 
-export const getBalanceHistory = async (): Promise<BalanceHistory> => {
-  const { data } = await api.get<BalanceHistory>("/cashback/balance-history/");
+export const getBalanceHistory = async (url?: string): Promise<BalanceHistory> => {
+  // If a full `next` URL is passed, strip the origin so axios baseURL still applies.
+  const path = url
+    ? url.replace(/^https?:\/\/[^/]+\/api/, "")
+    : "/cashback/balance-history/";
+  const { data } = await api.get<BalanceHistory>(path);
   return data;
 };
 

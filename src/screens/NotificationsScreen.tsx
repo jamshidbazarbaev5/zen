@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
 import { getMyOrders } from '../api';
+import { subscribe } from '../ws/customerSocket';
 import { formatPrice } from '../utils/formatPrice';
 import type { OrderListItem } from '../types';
 // import { ChevronDown } from "lucide-react";
@@ -64,12 +65,18 @@ const NotificationsScreen = ({ onBack }: Props) => {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  useEffect(() => {
+  const fetchOrders = useCallback(() => {
     getMyOrders()
       .then(setOrders)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  useEffect(() => subscribe('order_updated', fetchOrders), [fetchOrders]);
 
   const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
 

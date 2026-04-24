@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { getMyProfile, updateMyProfile } from '../api';
 import type { CustomerProfile } from '../types';
 import { useTranslation } from 'react-i18next';
+import { subscribe } from '../ws/customerSocket';
 
 interface UserContextType {
   user: CustomerProfile | null;
@@ -52,6 +53,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchUser();
   }, []);
+
+  useEffect(() => subscribe('balance_updated', () => { fetchUser(); }), []);
 
   return (
     <UserContext.Provider value={{ user, loading, updateLanguage, refreshUser }}>

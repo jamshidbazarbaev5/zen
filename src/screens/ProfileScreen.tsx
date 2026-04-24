@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon, UserIcon } from '../components/Icons';
 import { getMyProfile, updateMyProfile } from '../api';
+import { subscribe } from '../ws/customerSocket';
 import { formatPrice } from '../utils/formatPrice';
 import CoffeeLoader from '../components/CoffeeLoader';
 import type { CustomerProfile, BusinessInfo } from '../types';
@@ -37,12 +38,18 @@ const ProfileScreen = ({ onBack, photoUrl, onCashback, onBalanceHistory }: Props
   const [editName, setEditName] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  const fetchProfile = useCallback(() => {
     getMyProfile()
-      .then((p) => { setProfile(p); setEditName(p.name); })
+      .then((p) => { setProfile(p); setEditName((prev) => prev || p.name); })
       .catch((err) => setError(err?.response?.data ? JSON.stringify(err.response.data) : err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  useEffect(() => subscribe('balance_updated', fetchProfile), [fetchProfile]);
 
   const handleSave = async () => {
     if (!editName.trim() || !profile) return;

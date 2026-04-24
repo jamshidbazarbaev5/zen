@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { styles } from "../styles";
 import { ArrowLeftIcon } from "../components/Icons";
 import { getBalanceHistory } from "../api";
+import { subscribe } from "../ws/customerSocket";
 import { formatPrice } from "../utils/formatPrice";
 import CoffeeLoader from "../components/CoffeeLoader";
 import type { BalanceHistory, BalanceTransaction } from "../types";
@@ -42,15 +43,57 @@ const formatDate = (iso: string, locale: string): string => {
 const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
   const { t, i18n } = useTranslation();
   const [history, setHistory] = useState<BalanceHistory | null>(null);
+  const [transactions, setTransactions] = useState<BalanceTransaction[]>([]);
+  const [nextUrl, setNextUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
+    setLoading(true);
     getBalanceHistory()
-      .then(setHistory)
+      .then((data) => {
+        setHistory(data);
+        setTransactions(data.transactions);
+        setNextUrl(data.next ?? null);
+      })
       .catch((err) => setError(err?.message || String(err)))
       .finally(() => setLoading(false));
   }, []);
+
+  const loadMore = useCallback(() => {
+    if (!nextUrl || loadingMore) return;
+    setLoadingMore(true);
+    getBalanceHistory(nextUrl)
+      .then((data) => {
+        setTransactions((prev) => {
+          const seen = new Set(prev.map((t) => t.id));
+          const fresh = data.transactions.filter((t) => !seen.has(t.id));
+          return [...prev, ...fresh];
+        });
+        setNextUrl(data.next ?? null);
+      })
+      .catch((err) => setError(err?.message || String(err)))
+      .finally(() => setLoadingMore(false));
+  }, [nextUrl, loadingMore]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  useEffect(() => subscribe('balance_updated', refresh), [refresh]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !nextUrl) return;
+    const io = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { rootMargin: '200px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [nextUrl, loadMore]);
 
   const txLabel = (tx: BalanceTransaction): string => {
     switch (tx.tx_type) {
@@ -225,7 +268,7 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
           </div>
 
           {/* Transactions */}
-          {history.transactions.length === 0 ? (
+          {transactions.length === 0 ? (
             <div
               style={{
                 padding: "40px 16px",
@@ -240,7 +283,7 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {history.transactions.map((tx) => {
+              {transactions.map((tx) => {
                 const amount = Number(tx.amount);
                 const isNegative = txIsNegative(tx);
                 const sign = isNegative ? "-" : "+";
@@ -310,6 +353,19 @@ const BalanceHistoryScreen = ({ onBack, onTopUp }: Props) => {
                   </div>
                 );
               })}
+              {nextUrl && (
+                <div
+                  ref={sentinelRef}
+                  style={{
+                    padding: "16px 0",
+                    textAlign: "center",
+                    fontSize: 13,
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  {loadingMore ? t("loadingText") : ""}
+                </div>
+              )}
             </div>
           )}
         </div>

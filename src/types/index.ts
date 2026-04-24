@@ -115,6 +115,9 @@ export interface BalanceTransaction {
 export interface BalanceHistory {
   balance: string;
   deposit_balance: string;
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
   transactions: BalanceTransaction[];
 }
 
