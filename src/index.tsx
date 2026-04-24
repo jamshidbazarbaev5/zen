@@ -38,7 +38,18 @@ const cartKey = (productId: number, modifiers: { modifier_id: number; quantity: 
 const Index = () => {
   const { t, i18n } = useTranslation();
   const { user } = useUser();
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("screen") as Screen | null;
+      const valid: Screen[] = ["home", "cart", "notifications", "profile", "cashback", "contact", "about", "balance", "deposit"] as Screen[];
+      if (saved && valid.includes(saved)) return saved;
+    }
+    return "home";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("screen", screen);
+  }, [screen]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState("");
