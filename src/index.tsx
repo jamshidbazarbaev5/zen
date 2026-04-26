@@ -445,7 +445,7 @@ const Index = () => {
           )}
 
           {screen === "about" && (
-            <AboutScreen onBack={() => setScreen("home")} />
+            <AboutScreen onBack={() => setScreen("home")} businessInfo={businessInfo} />
           )}
 
           {screen === "cart" && (
@@ -603,7 +603,7 @@ const Index = () => {
           onSelectDelivery={() => {
             setDeliveryMode("delivery");
             setOrderTypeModalOpen(false);
-            setLocationModalOpen(true);
+            setBranchModalOpen(true);
           }}
           onSelectPickup={() => {
             setDeliveryMode("pickup");
@@ -618,7 +618,13 @@ const Index = () => {
         <BranchModal
           selectedBranch={selectedBranch}
           branches={businessInfo.pickup_locations}
-          onSelect={(branch) => { setSelectedBranch(branch); setBranchModalOpen(false); }}
+          onSelect={(branch) => {
+            setSelectedBranch(branch);
+            setBranchModalOpen(false);
+            if (deliveryMode === "delivery") {
+              setLocationModalOpen(true);
+            }
+          }}
           onClose={() => setBranchModalOpen(false)}
         />
       )}

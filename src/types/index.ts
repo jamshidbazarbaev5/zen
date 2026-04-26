@@ -211,6 +211,8 @@ export interface PickupLocation {
   id: number;
   name: string;
   address: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface BusinessInfo {

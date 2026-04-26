@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { styles } from '../styles';
 import { ArrowLeftIcon } from '../components/Icons';
+import type { BusinessInfo } from '../types';
 
 interface Props {
   onBack: () => void;
+  businessInfo: BusinessInfo | null;
 }
 
 const ClockIcon = () => (
@@ -26,8 +28,23 @@ const PhoneIcon = () => (
   </svg>
 );
 
-const AboutScreen = ({ onBack }: Props) => {
+const MoonIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+  </svg>
+);
+
+const AboutScreen = ({ onBack, businessInfo }: Props) => {
   const { t } = useTranslation();
+
+  const branch = businessInfo?.pickup_locations?.[0] ?? null;
+  const address = branch?.address || t('aboutAddress');
+  const lat = branch?.latitude;
+  const lng = branch?.longitude;
+  const mapsUrl = lat != null && lng != null
+    ? `https://maps.google.com/?q=${lat},${lng}`
+    : `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+  const phone = businessInfo?.phone || "+998 (90) 701-19-19";
 
   return (
     <div style={{ padding: "0 16px", minHeight: "80vh" }}>
@@ -43,8 +60,9 @@ const AboutScreen = ({ onBack }: Props) => {
           textAlign: "center", color: "#fff",
         }}>
           <h1 style={{ fontSize: 32, fontWeight: 900, margin: "0 0 12px", letterSpacing: -1 }}>ZEN</h1>
-          <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0, opacity: 0.95 }}>
-            {t('aboutTagline')}
+          <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0, opacity: 0.95, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <span>{t('aboutTagline')}</span>
+            <MoonIcon />
           </p>
         </div>
 
@@ -67,7 +85,7 @@ const AboutScreen = ({ onBack }: Props) => {
 
           {/* Address */}
           <a
-            href="https://maps.google.com/?q=42.4667,59.6167"
+            href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -84,14 +102,14 @@ const AboutScreen = ({ onBack }: Props) => {
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>{t('address')}</div>
               <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>
-                {t('aboutAddress')}
+                {address}
               </div>
             </div>
           </a>
 
           {/* Phone */}
           <a
-            href="tel:+998907011919"
+            href={`tel:${phone.replace(/[^+\d]/g, '')}`}
             style={{
               display: "flex", alignItems: "center", gap: 14,
               padding: "18px 20px", background: "var(--card-bg, var(--bg-primary))", borderRadius: 14,
@@ -105,7 +123,7 @@ const AboutScreen = ({ onBack }: Props) => {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 4 }}>{t('phone')}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>+998 (90) 701-19-19</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>{phone}</div>
             </div>
           </a>
         </div>
