@@ -305,6 +305,7 @@ const Index = () => {
           pickup_location_id: selectedBranch.id,
         } : {}),
         ...(deliveryMode === "delivery" ? {
+          ...(selectedBranch ? { pickup_location_id: selectedBranch.id } : {}),
           delivery_address: deliveryAddress,
           delivery_latitude: deliveryPosition[0],
           delivery_longitude: deliveryPosition[1],
